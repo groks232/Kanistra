@@ -9,6 +9,7 @@ import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,22 @@ class CartViewModel @Inject constructor(
 
     init {
         getCart()
+    }
+
+    fun onEvent(event: CartEvent) {
+        when(event){
+            is CartEvent.DeleteCartItem -> {
+                viewModelScope.launch {
+                    cartUseCases.deleteCartItem(
+                        event.cartItem
+                    )
+                }
+
+            }
+            is CartEvent.RestoreCartItem -> {
+
+            }
+        }
     }
 
     private fun getCart() {

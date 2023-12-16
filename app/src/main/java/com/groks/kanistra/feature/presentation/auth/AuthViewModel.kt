@@ -57,9 +57,7 @@ class AuthViewModel @Inject constructor(
                     ).onEach { result ->
                         when (result) {
                             is Resource.Success -> {
-                                _state.value = AuthState(
-                                    isSuccess = result.data?.success ?: false,
-                                )
+                                _state.value = AuthState()
                                 _eventFlow.emit(UiEvent.Login)
                             }
 

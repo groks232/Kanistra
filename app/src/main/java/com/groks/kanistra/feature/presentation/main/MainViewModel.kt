@@ -14,7 +14,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     checkToken: CheckToken
 ): ViewModel() {
-    val viewState = checkToken.invoke().map {loggedIn ->
+    val viewState = checkToken.invoke().map { loggedIn ->
         when(loggedIn){
             true -> {
                 ViewState.LoggedIn
@@ -23,5 +23,5 @@ class MainViewModel @Inject constructor(
                 ViewState.NotLoggedIn
             }
         }
-    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), initialValue = ViewState.Loading)
+    }.stateIn(scope = viewModelScope, started = SharingStarted.Lazily, initialValue = ViewState.Loading)
 }

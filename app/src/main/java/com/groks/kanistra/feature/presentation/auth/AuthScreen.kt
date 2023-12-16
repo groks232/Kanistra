@@ -75,95 +75,88 @@ fun AuthScreen(
                 }
             }
             false -> {
-                when(state.isSuccess) {
-                    true -> {
+                Box(modifier = Modifier.fillMaxSize()){
+                    Column(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)){
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp))
+                        Text(text = "Welcome back!", fontSize = 40.sp)
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(15.dp))
+                        Text(text = "Login below or create new account", fontSize = 20.sp)
 
-                    }
-                    false -> {
-                        Box(modifier = Modifier.fillMaxSize()){
-                            Column(modifier = Modifier
-                                .fillMaxSize()
-                                .padding(20.dp)){
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp))
-                                Text(text = "Welcome back!", fontSize = 40.sp)
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(15.dp))
-                                Text(text = "Login below or create new account", fontSize = 20.sp)
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp))
 
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp))
-
-                                OutlinedTextField(
-                                    value = loginState.text,
-                                    onValueChange = {
-                                        viewModel.onEvent(AuthEvent.EnteredLogin(it))
-                                    },
-                                    Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(10.dp),
-                                    label = {
-                                        Text(text = "Email")
-                                    }
-                                )
-
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(35.dp))
-
-                                OutlinedTextField(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(10.dp),
-                                    value = passwordState.text,
-                                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                                    trailingIcon = {
-                                        val image = if (passwordVisibility)
-                                            Icons.Filled.Visibility
-                                        else Icons.Filled.VisibilityOff
-
-                                        val description = if (passwordVisibility) "Hide password" else "Show password"
-
-                                        IconButton(onClick = {passwordVisibility = !passwordVisibility}){
-                                            Icon(imageVector  = image, description)
-                                        }
-                                    },
-                                    onValueChange = {
-                                        viewModel.onEvent(AuthEvent.EnteredPassword(it))
-                                    },
-                                    label = {
-                                        Text(text = "Password")
-                                    }
-                                )
+                        OutlinedTextField(
+                            value = loginState.text,
+                            onValueChange = {
+                                viewModel.onEvent(AuthEvent.EnteredLogin(it))
+                            },
+                            Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            label = {
+                                Text(text = "Email")
                             }
+                        )
 
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(35.dp))
 
-                            Column(modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(horizontal = 20.dp)) {
-                                Button(
-                                    onClick = {
-                                        viewModel.onEvent(AuthEvent.Login)
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(50.dp),
-                                    shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Text(text = "Log in",
-                                        fontSize = 20.sp)
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            value = passwordState.text,
+                            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val image = if (passwordVisibility)
+                                    Icons.Filled.Visibility
+                                else Icons.Filled.VisibilityOff
+
+                                val description = if (passwordVisibility) "Hide password" else "Show password"
+
+                                IconButton(onClick = {passwordVisibility = !passwordVisibility}){
+                                    Icon(imageVector  = image, description)
                                 }
-
-                                Text(
-                                    text = "Forgot Password",
-                                    modifier = Modifier
-                                        .align(Alignment.CenterHorizontally)
-                                        .padding(20.dp),
-                                    fontSize = 20.sp
-                                )
+                            },
+                            onValueChange = {
+                                viewModel.onEvent(AuthEvent.EnteredPassword(it))
+                            },
+                            label = {
+                                Text(text = "Password")
                             }
+                        )
+                    }
+
+
+                    Column(modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 20.dp)) {
+                        Button(
+                            onClick = {
+                                viewModel.onEvent(AuthEvent.Login)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(text = "Log in",
+                                fontSize = 20.sp)
                         }
+
+                        Text(
+                            text = "Forgot Password",
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(20.dp),
+                            fontSize = 20.sp
+                        )
                     }
                 }
             }

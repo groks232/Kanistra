@@ -11,8 +11,3 @@ sealed class ViewState {
     object LoggedIn: ViewState() // hasLoggedIn = true
     object NotLoggedIn: ViewState() // hasLoggedIn = false
 }
-
-sealed class StateView {
-    object LoggedIn: StateView() // hasLoggedIn = true
-    object NotLoggedIn: StateView() // hasLoggedIn = false
-}

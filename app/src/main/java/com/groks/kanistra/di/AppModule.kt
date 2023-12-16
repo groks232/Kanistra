@@ -14,6 +14,7 @@ import com.groks.kanistra.feature.domain.repository.DataStoreRepository
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import com.groks.kanistra.feature.domain.use_case.auth.AuthUseCases
 import com.groks.kanistra.feature.domain.use_case.auth.ForgotPassword
+import com.groks.kanistra.feature.domain.use_case.auth.LogOut
 import com.groks.kanistra.feature.domain.use_case.auth.Login
 import com.groks.kanistra.feature.domain.use_case.auth.Register
 import com.groks.kanistra.feature.domain.use_case.cart.AddToCart
@@ -21,6 +22,10 @@ import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import com.groks.kanistra.feature.domain.use_case.cart.DeleteCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.EditCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.GetCart
+import com.groks.kanistra.feature.domain.use_case.user.DeleteUser
+import com.groks.kanistra.feature.domain.use_case.user.EditUserInfo
+import com.groks.kanistra.feature.domain.use_case.user.GetUserInfo
+import com.groks.kanistra.feature.domain.use_case.user.UserUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -118,7 +123,18 @@ object AppModule {
         return AuthUseCases(
             login = Login(kanistraRepository, dataStoreRepository),
             register = Register(kanistraRepository),
-            forgotPassword = ForgotPassword(kanistraRepository)
+            forgotPassword = ForgotPassword(kanistraRepository),
+            logOut = LogOut(dataStoreRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserUseCases(repository: KanistraRepository): UserUseCases {
+        return UserUseCases(
+            deleteUser = DeleteUser(repository),
+            editUserInfo = EditUserInfo(repository),
+            getUserInfo = GetUserInfo(repository)
         )
     }
 }

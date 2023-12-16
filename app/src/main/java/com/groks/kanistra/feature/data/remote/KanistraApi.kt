@@ -32,7 +32,7 @@ interface KanistraApi {
         @Body addToCartBody: CartItem
     ): SimpleResponse
 
-    @GET("/cart/get")
+    @GET("/cart/getAll")
     suspend fun getUserCart(): List<CartItem>
 
     @DELETE("/cart/delete")
@@ -57,7 +57,7 @@ interface KanistraApi {
     ): Part
 
     //User
-    @GET("/user/get")
+    @GET("/getUser")
     suspend fun getUserInfo(): User
 
     @POST("/user/edit")
