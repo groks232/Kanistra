@@ -35,6 +35,11 @@ class AuthViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    fun clearState(){
+        _passwordFieldText.value = AuthTextFieldState()
+        _loginFieldText.value = AuthTextFieldState()
+    }
+
     fun onEvent(event: AuthEvent){
         when(event){
             is AuthEvent.EnteredLogin -> {

@@ -1,6 +1,5 @@
 package com.groks.kanistra.feature.data.remote
 
-import com.groks.kanistra.feature.data.remote.dto.FindPartsBody
 import com.groks.kanistra.feature.data.remote.dto.LoginBody
 import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
@@ -46,12 +45,12 @@ interface KanistraApi {
     ): SimpleResponse
 
     //Search
-    @GET("/find")
+    @GET("/search")
     suspend fun findParts(
-        @Body findPartsBody: FindPartsBody
+        @Query("name") name: String
     ): List<Part>
 
-    @GET("/find/id")
+    @GET("/search/id")
     suspend fun findPart(
         @Query("id") id: String
     ): Part

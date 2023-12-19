@@ -23,6 +23,7 @@ import com.groks.kanistra.feature.presentation.cart.CartScreen
 import com.groks.kanistra.feature.presentation.main.components.BottomNavigationBar
 import com.groks.kanistra.feature.presentation.part_details.PartScreen
 import com.groks.kanistra.feature.presentation.profile.ProfileScreen
+import com.groks.kanistra.feature.presentation.search.SearchScreen
 import com.groks.kanistra.feature.presentation.util.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +42,7 @@ fun MainScreen(
             }
         }
         is ViewState.LoggedIn -> {
-            NavContr()
+            NavHostEntry()
         }
         is ViewState.NotLoggedIn -> {
             AuthScreen()
@@ -52,7 +53,7 @@ fun MainScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NavContr(){
+fun NavHostEntry(){
     val navController = rememberNavController()
 
     Scaffold(
@@ -71,11 +72,7 @@ fun NavContr(){
                 PartScreen()
             }
             composable(route = Screen.SearchScreen.route){
-                Box(modifier = Modifier.fillMaxSize()){
-                    Column(modifier = Modifier.align(Alignment.Center)) {
-                        Text(text = "Search screen, not implemented yet")
-                    }
-                }
+                SearchScreen(navController = navController)
             }
             composable(route = Screen.ProfileScreen.route){
                 ProfileScreen()
@@ -87,7 +84,6 @@ fun NavContr(){
                     }
                 }
             }
-
         }
     }
 }

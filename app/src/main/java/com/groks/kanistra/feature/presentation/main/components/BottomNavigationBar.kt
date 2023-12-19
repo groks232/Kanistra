@@ -22,7 +22,7 @@ fun BottomNavigationBar(navController: NavController){
         Screen.FavoritesScreen
     )
 
-    NavigationBar() {
+    NavigationBar {
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination

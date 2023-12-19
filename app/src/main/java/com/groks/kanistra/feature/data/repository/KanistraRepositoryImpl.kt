@@ -39,8 +39,8 @@ class KanistraRepositoryImpl @Inject constructor(
         return api.editCartItem(editCartItemBody)
     }
 
-    override suspend fun findParts(findPartsBody: FindPartsBody): List<Part> {
-        return api.findParts(findPartsBody)
+    override suspend fun findParts(name: String): List<Part> {
+        return api.findParts(name)
     }
 
     override suspend fun findPart(id: String): Part {

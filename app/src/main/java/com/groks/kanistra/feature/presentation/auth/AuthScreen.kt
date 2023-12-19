@@ -59,7 +59,7 @@ fun AuthScreen(
                 }
 
                 is AuthViewModel.UiEvent.Login -> {
-
+                    viewModel.clearState()
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.groks.kanistra.feature.domain.repository
 
-import com.groks.kanistra.feature.data.remote.dto.FindPartsBody
 import com.groks.kanistra.feature.data.remote.dto.LoginBody
 import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
@@ -25,7 +24,7 @@ interface KanistraRepository {
     suspend fun editCartItem(editCartItemBody: CartItem): SimpleResponse
 
     //Search
-    suspend fun findParts(findPartsBody: FindPartsBody): List<Part>
+    suspend fun findParts(name: String): List<Part>
 
     suspend fun findPart(id: String): Part
 
