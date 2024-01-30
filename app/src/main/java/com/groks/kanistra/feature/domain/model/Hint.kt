@@ -5,6 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Hint(
-    val token: String,
-    @PrimaryKey val id: Int? = null
+    val hint: String,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0
 )

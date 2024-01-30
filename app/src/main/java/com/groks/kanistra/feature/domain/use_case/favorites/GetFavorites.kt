@@ -1,7 +1,7 @@
 package com.groks.kanistra.feature.domain.use_case.favorites
 
 import com.groks.kanistra.common.Resource
-import com.groks.kanistra.feature.domain.model.Favorite
+import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 class GetFavorites @Inject constructor(
     private val repository: KanistraRepository
 ) {
-    operator fun invoke(): Flow<Resource<List<Favorite>>> = flow {
+    operator fun invoke(): Flow<Resource<List<FavoritesItem>>> = flow {
         try {
             emit(Resource.Loading())
             val favorites = repository.getFavorites()

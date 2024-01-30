@@ -1,11 +1,10 @@
 package com.groks.kanistra.feature.data.repository
 
 import com.groks.kanistra.feature.data.remote.KanistraApi
-import com.groks.kanistra.feature.data.remote.dto.FindPartsBody
 import com.groks.kanistra.feature.data.remote.dto.LoginBody
 import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
-import com.groks.kanistra.feature.domain.model.Favorite
+import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Part
 import com.groks.kanistra.feature.domain.model.SimpleResponse
 import com.groks.kanistra.feature.domain.model.User
@@ -43,8 +42,8 @@ class KanistraRepositoryImpl @Inject constructor(
         return api.findParts(name)
     }
 
-    override suspend fun findPart(id: String): Part {
-        return api.findPart(id)
+    override suspend fun findPart(id: String, provider: String): Part {
+        return api.findPart(id, provider)
     }
 
     override suspend fun getUserInfo(): User {
@@ -59,15 +58,15 @@ class KanistraRepositoryImpl @Inject constructor(
         return api.deleteUser(user)
     }
 
-    override suspend fun addToFavorites(favorite: Favorite): SimpleResponse {
-        return api.addToFavorites(favorite)
+    override suspend fun addToFavorites(favoritesItem: FavoritesItem): SimpleResponse {
+        return api.addToFavorites(favoritesItem)
     }
 
-    override suspend fun getFavorites(): List<Favorite> {
+    override suspend fun getFavorites(): List<FavoritesItem> {
         return api.getFavorites()
     }
 
-    override suspend fun deleteFromFavorites(favorite: Favorite): SimpleResponse {
-        return api.deleteFromFavorites(favorite)
+    override suspend fun deleteFromFavorites(id: String): SimpleResponse {
+        return api.deleteFromFavorites(id)
     }
 }

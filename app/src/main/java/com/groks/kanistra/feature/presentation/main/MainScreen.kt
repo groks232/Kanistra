@@ -1,13 +1,14 @@
 package com.groks.kanistra.feature.presentation.main
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,13 +21,14 @@ import androidx.navigation.compose.rememberNavController
 import com.groks.kanistra.common.ViewState
 import com.groks.kanistra.feature.presentation.auth.AuthScreen
 import com.groks.kanistra.feature.presentation.cart.CartScreen
+import com.groks.kanistra.feature.presentation.favorites.FavoritesScreen
 import com.groks.kanistra.feature.presentation.main.components.BottomNavigationBar
 import com.groks.kanistra.feature.presentation.part_details.PartScreen
 import com.groks.kanistra.feature.presentation.profile.ProfileScreen
 import com.groks.kanistra.feature.presentation.search.SearchScreen
 import com.groks.kanistra.feature.presentation.util.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
@@ -50,8 +52,8 @@ fun MainScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NavHostEntry(){
     val navController = rememberNavController()
@@ -60,16 +62,14 @@ fun NavHostEntry(){
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
-    ) {
+    ) {paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.CartScreen.route
+            startDestination = Screen.SearchScreen.route,
+            modifier = Modifier.padding(paddingValues)
         ){
             composable(route = Screen.CartScreen.route) {
                 CartScreen(navController = navController)
-            }
-            composable(route = Screen.PartDetails.route + "/{id}"){
-                PartScreen()
             }
             composable(route = Screen.SearchScreen.route){
                 SearchScreen(navController = navController)
@@ -78,11 +78,10 @@ fun NavHostEntry(){
                 ProfileScreen()
             }
             composable(route = Screen.FavoritesScreen.route){
-                Box(modifier = Modifier.fillMaxSize()){
-                    Column(modifier = Modifier.align(Alignment.Center)) {
-                        Text(text = "Favorites screen, not implemented yet")
-                    }
-                }
+                FavoritesScreen(navController = navController)
+            }
+            composable(route = Screen.PartDetails.route + "/{provider}/{id}"){
+                PartScreen()
             }
         }
     }

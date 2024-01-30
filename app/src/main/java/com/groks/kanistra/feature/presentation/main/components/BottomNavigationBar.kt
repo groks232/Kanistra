@@ -18,8 +18,8 @@ fun BottomNavigationBar(navController: NavController){
     val items = listOf(
         Screen.SearchScreen,
         Screen.CartScreen,
-        Screen.ProfileScreen,
-        Screen.FavoritesScreen
+        Screen.FavoritesScreen,
+        Screen.ProfileScreen
     )
 
     NavigationBar {

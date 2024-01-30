@@ -69,9 +69,14 @@ fun SearchScreen(
             }
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
-            SearchGrid(navController = navController, parts = state.partList)
-            if(state.error.isNotBlank()) {
+        SearchGrid(
+            navController = navController,
+            parts = state.partList,
+            paddingValues = paddingValues,
+            viewModel = viewModel
+        )
+        if(state.error.isNotBlank()) {
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                 Text(
                     text = state.error,
                     color = MaterialTheme.colorScheme.error,
@@ -82,10 +87,11 @@ fun SearchScreen(
                         .align(Alignment.Center)
                 )
             }
-            if(state.isLoading) {
+        }
+        if(state.isLoading) {
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
-
     }
 }

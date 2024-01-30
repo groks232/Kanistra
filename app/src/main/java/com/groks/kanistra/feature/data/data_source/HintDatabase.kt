@@ -12,6 +12,6 @@ abstract class HintDatabase: RoomDatabase() {
     abstract val hintDao: HintDao
 
     companion object {
-        const val DATABASE_NAME = "token_db"
+        const val DATABASE_NAME = "hints_db"
     }
 }

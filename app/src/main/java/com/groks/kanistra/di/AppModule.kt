@@ -11,6 +11,7 @@ import com.groks.kanistra.feature.data.repository.DataStoreRepositoryImpl
 import com.groks.kanistra.feature.data.repository.HintRepositoryImpl
 import com.groks.kanistra.feature.data.repository.KanistraRepositoryImpl
 import com.groks.kanistra.feature.domain.repository.DataStoreRepository
+import com.groks.kanistra.feature.domain.repository.HintRepository
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import com.groks.kanistra.feature.domain.use_case.auth.AuthUseCases
 import com.groks.kanistra.feature.domain.use_case.auth.ForgotPassword
@@ -22,6 +23,14 @@ import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import com.groks.kanistra.feature.domain.use_case.cart.DeleteCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.EditCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.GetCart
+import com.groks.kanistra.feature.domain.use_case.favorites.AddToFavorites
+import com.groks.kanistra.feature.domain.use_case.favorites.DeleteFavoritesItem
+import com.groks.kanistra.feature.domain.use_case.favorites.FavoritesUseCases
+import com.groks.kanistra.feature.domain.use_case.favorites.GetFavorites
+import com.groks.kanistra.feature.domain.use_case.hint.DeleteHint
+import com.groks.kanistra.feature.domain.use_case.hint.GetHints
+import com.groks.kanistra.feature.domain.use_case.hint.HintUseCases
+import com.groks.kanistra.feature.domain.use_case.hint.InsertHint
 import com.groks.kanistra.feature.domain.use_case.user.DeleteUser
 import com.groks.kanistra.feature.domain.use_case.user.EditUserInfo
 import com.groks.kanistra.feature.domain.use_case.user.GetUserInfo
@@ -81,7 +90,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideHintRepository(db: HintDatabase): HintRepositoryImpl {
+    fun provideHintRepository(db: HintDatabase): HintRepository {
         return HintRepositoryImpl(db.hintDao)
     }
 
@@ -89,9 +98,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideKanistraApi(okHttpClient: OkHttpClient): KanistraApi {
-        /*val client =  OkHttpClient.Builder()
-            .addInterceptor(OAuthInterceptor("Bearer", hint?.token ?: ""))
-            .build()*/
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(okHttpClient)
@@ -135,6 +141,26 @@ object AppModule {
             deleteUser = DeleteUser(repository),
             editUserInfo = EditUserInfo(repository),
             getUserInfo = GetUserInfo(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoritesUseCases(repository: KanistraRepository): FavoritesUseCases {
+        return FavoritesUseCases(
+            addToFavorites = AddToFavorites(repository),
+            deleteFavoritesItem = DeleteFavoritesItem(repository),
+            getFavorites = GetFavorites(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideHintUseCases(repository: HintRepository): HintUseCases {
+        return HintUseCases(
+            getHints = GetHints(repository),
+            deleteHint = DeleteHint(repository),
+            insertHint = InsertHint(repository)
         )
     }
 }

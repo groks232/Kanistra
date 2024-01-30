@@ -3,7 +3,7 @@ package com.groks.kanistra.feature.domain.repository
 import com.groks.kanistra.feature.data.remote.dto.LoginBody
 import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
-import com.groks.kanistra.feature.domain.model.Favorite
+import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Part
 import com.groks.kanistra.feature.domain.model.SimpleResponse
 import com.groks.kanistra.feature.domain.model.User
@@ -26,7 +26,7 @@ interface KanistraRepository {
     //Search
     suspend fun findParts(name: String): List<Part>
 
-    suspend fun findPart(id: String): Part
+    suspend fun findPart(id: String, provider: String): Part
 
     //User
     suspend fun getUserInfo(): User
@@ -36,9 +36,9 @@ interface KanistraRepository {
     suspend fun deleteUser(user: User): SimpleResponse
 
     //Favorites
-    suspend fun addToFavorites(favorite: Favorite): SimpleResponse
+    suspend fun addToFavorites(favoritesItem: FavoritesItem): SimpleResponse
 
-    suspend fun getFavorites(): List<Favorite>
+    suspend fun getFavorites(): List<FavoritesItem>
 
-    suspend fun deleteFromFavorites(favorite: Favorite): SimpleResponse
+    suspend fun deleteFromFavorites(id: String): SimpleResponse
 }

@@ -12,10 +12,10 @@ import javax.inject.Inject
 class FindPart @Inject constructor(
     private val repository: KanistraRepository
 ) {
-    operator fun invoke(id: String): Flow<Resource<Part>> = flow {
+    operator fun invoke(id: String, provider: String): Flow<Resource<Part>> = flow {
         try {
             emit(Resource.Loading())
-            val part = repository.findPart(id)
+            val part = repository.findPart(id, provider)
             emit(Resource.Success(part))
         } catch (e: HttpException){
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

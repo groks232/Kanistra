@@ -3,7 +3,7 @@ package com.groks.kanistra.feature.data.remote
 import com.groks.kanistra.feature.data.remote.dto.LoginBody
 import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
-import com.groks.kanistra.feature.domain.model.Favorite
+import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Part
 import com.groks.kanistra.feature.domain.model.SimpleResponse
 import com.groks.kanistra.feature.domain.model.User
@@ -39,7 +39,7 @@ interface KanistraApi {
         @Query("id") id: String
     ): SimpleResponse
 
-    @POST("/cart/edit")
+    @POST("/cart/update")
     suspend fun editCartItem(
         @Body editCartItemBody: CartItem
     ): SimpleResponse
@@ -52,7 +52,8 @@ interface KanistraApi {
 
     @GET("/search/id")
     suspend fun findPart(
-        @Query("id") id: String
+        @Query("id") id: String,
+        @Query("provider") provider: String
     ): Part
 
     //User
@@ -70,16 +71,16 @@ interface KanistraApi {
     ): SimpleResponse
 
     //Favorites
-    @POST("favorites/add")
+    @POST("/favorites/add")
     suspend fun addToFavorites(
-        @Body favorite: Favorite
+        @Body favorite: FavoritesItem
     ): SimpleResponse
 
     @GET("/favorites/get")
-    suspend fun getFavorites(): List<Favorite>
+    suspend fun getFavorites(): List<FavoritesItem>
 
     @DELETE("/favorites/delete")
     suspend fun deleteFromFavorites(
-        @Body favorite: Favorite
+        @Query("id") id: String
     ): SimpleResponse
 }

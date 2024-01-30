@@ -8,5 +8,7 @@ data class Part(
     val price: Double,
     val deliveryTime: Int,
     val images: List<String>,
-    val amount: Int
+    val amount: Int,
+    val isInStock: Boolean? = null,
+    val provider: String
 )

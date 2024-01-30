@@ -7,15 +7,15 @@ import com.groks.kanistra.feature.domain.repository.HintRepository
 class HintRepositoryImpl(
     private val dao: HintDao
 ): HintRepository {
-    override suspend fun getHints(): Hint? {
-        return dao.getTokenById(0)
+    override suspend fun getHints(): List<Hint> {
+        return dao.getHints()
     }
 
     override suspend fun putHint(hint: Hint) {
-        dao.insertToken(hint)
+        dao.insertHint(hint)
     }
 
-    override suspend fun deleteHint() {
-        dao.deleteToken()
+    override suspend fun deleteHint(id: Int) {
+        dao.deleteHint(id)
     }
 }

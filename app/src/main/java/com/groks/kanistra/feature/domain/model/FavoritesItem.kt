@@ -1,14 +1,13 @@
 package com.groks.kanistra.feature.domain.model
 
-data class CartItem(
-    val id: String? = "null",
-    val provider: String,
+data class FavoritesItem(
+    val id: String,
     val partId: String,
-    var amount: Int,
-    val image: String,
     val title: String,
     val brand: String,
     val price: Double,
-    val deliveryTime: Int?,
+    val deliveryTime: Int,
+    val image: String?,
+    val provider: String,
     val creationDate: String?
 )
