@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -37,7 +36,8 @@ import com.groks.kanistra.feature.domain.model.Part
 fun PartCard(
     part: Part,
     onItemClick: () -> Unit,
-    onAddToFavoritesClick: () -> Unit
+    onAddToFavoritesClick: () -> Unit,
+    onAddToCartClick: () -> Unit
 ) {
     Column(Modifier.clickable(onClick = onItemClick)) {
         Card(shape = RoundedCornerShape(8.dp),
@@ -111,19 +111,11 @@ fun PartCard(
         )
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onAddToCartClick,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         ) {
             Text(text = "В корзину")
         }
-    }
-}
-
-@Preview
-@Composable
-fun prev(){
-    PartCard(part = Part(1,"s","s","s", 1.0, 2, listOf(""), 1, null, "rossko"), onItemClick = { /*TODO*/ }) {
-        
     }
 }

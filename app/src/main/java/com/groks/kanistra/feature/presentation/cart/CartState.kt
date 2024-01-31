@@ -4,6 +4,6 @@ import com.groks.kanistra.feature.domain.model.CartItem
 
 data class CartState(
     val isLoading: Boolean = false,
-    val cartList: List<CartItem> = emptyList(),
+    val cartList: MutableList<CartItem> = mutableListOf(),
     val error: String = ""
 )

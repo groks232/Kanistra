@@ -8,7 +8,16 @@ import javax.inject.Inject
 class DeleteCartItem @Inject constructor(
     private val repository: KanistraRepository
 ) {
-    suspend operator fun invoke(cartItem: CartItem): SimpleResponse{
+    suspend operator fun invoke(cartItem: CartItem): SimpleResponse {
+        /*try {
+            emit(Resource.Loading())
+            val response = repository.deleteItemFromCart(cartItem.id!!)
+            emit(Resource.Success(response))
+        } catch (e: HttpException) {
+            emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+        } catch (e: IOException) {
+            emit(Resource.Error("Couldn't reach the server. Check your internet connection."))
+        }*/
         return repository.deleteItemFromCart(cartItem.id!!)
     }
 }

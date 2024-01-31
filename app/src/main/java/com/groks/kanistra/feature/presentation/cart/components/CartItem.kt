@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,14 +36,19 @@ import coil.compose.SubcomposeAsyncImage
 import com.groks.kanistra.R
 import com.groks.kanistra.feature.domain.model.CartItem
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CartItem(
     cartItem: CartItem,
     onItemClick: (CartItem) -> Unit,
     onIncreaseClick: (CartItem) -> Unit,
-    onDecreaseClick: (CartItem) -> Unit
+    onDecreaseClick: (CartItem) -> Unit,
+    onRemove:() -> Unit
 ){
     val amount = remember { mutableStateOf(cartItem.amount) }
+
+
+
     Row(
         modifier = Modifier
             .height(182.dp)
@@ -189,7 +195,7 @@ fun CartItem(
                 }
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = onRemove,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = 4.dp),

@@ -83,7 +83,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
     //material3
-    implementation("androidx.compose.material3:material3:1.2.0-beta01")
+    implementation("androidx.compose.material3:material3:1.2.0-rc01")
 
     //coli(to download image)
     implementation("io.coil-kt:coil-compose:2.4.0")

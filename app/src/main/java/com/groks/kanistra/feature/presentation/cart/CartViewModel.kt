@@ -35,7 +35,7 @@ class CartViewModel @Inject constructor(
                 cartUseCases.getCart().onEach { result ->
                     when (result) {
                         is Resource.Success -> {
-                            _state.value = CartState(cartList = result.data ?: emptyList())
+                            _state.value = CartState(cartList = (result.data ?: mutableListOf()).toMutableList())
                         }
 
                         is Resource.Error -> {
@@ -55,6 +55,8 @@ class CartViewModel @Inject constructor(
                         event.cartItem
                     )
                 }
+                onEvent(CartEvent.GetCart)
+                //_state.value = CartState(cartList = list.toMutableList())
             }
             is CartEvent.RestoreCartItem -> {
 

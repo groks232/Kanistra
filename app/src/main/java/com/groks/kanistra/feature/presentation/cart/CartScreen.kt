@@ -26,6 +26,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +56,8 @@ fun CartScreen(
         )
     val state = viewModel.state.value
 
+    val sum = remember { mutableStateOf(0) }
+
     Scaffold(
         modifier = Modifier
             .pullRefresh(pullRefreshState),
@@ -72,7 +76,10 @@ fun CartScreen(
                 text = {
                     Column {
                         Text(text = "К оформлению", style = MaterialTheme.typography.titleMedium)
-                        Text(text = "${state.cartList.size} шт., ${getSum(state.cartList)} ₽", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = "${state.cartList.size} шт., ${sum.value} ₽",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 },
             )
@@ -81,7 +88,10 @@ fun CartScreen(
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)) {
-            items(state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }) { cartItem ->
+            sum.value = getSum(list = state.cartList)
+            items(
+                state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate)}
+            ) { cartItem ->
                 CartItem(
                     cartItem = cartItem,
                     onItemClick = {
@@ -102,7 +112,7 @@ fun CartScreen(
                                 amount = it.amount
                             )
                         ))
-                        cartItem.amount = it.amount
+                        sum.value += ((it.price.toInt() + 1))
                     },
                     onDecreaseClick = {
                         viewModel.onEvent(CartEvent.DecreaseAmount(
@@ -119,7 +129,10 @@ fun CartScreen(
                                 amount = it.amount
                             )
                         ))
-                        cartItem.amount = it.amount
+                        sum.value -= ((it.price.toInt() + 1))
+                    },
+                    onRemove = {
+                        viewModel.onEvent(CartEvent.DeleteCartItem(cartItem))
                     }
                 )
             }
