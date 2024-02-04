@@ -1,6 +1,5 @@
 package com.groks.kanistra.feature.presentation.favorites.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -25,11 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
-import com.groks.kanistra.R
+import coil.compose.SubcomposeAsyncImageContent
 import com.groks.kanistra.feature.domain.model.FavoritesItem
 
 @Composable
@@ -60,25 +61,36 @@ fun FavoritesItem(
             Box(modifier = Modifier.fillMaxSize()){
                 SubcomposeAsyncImage(
                     model = if(!favoritesItem.image.isNullOrEmpty())favoritesItem.image else "",
-                    loading = {
-                        CircularProgressIndicator()
-                    },
-                    error = {
-                        //it.result.throwable.localizedMessage?.let { it1 -> Text(text = it1) }
-                        //it.result.throwable.message.let { it1 -> Text(text = it1 ?: "idk")}
-                        Image(
-                            painter = painterResource(id = R.drawable.placeholder),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(4.dp)
-                        )
-                    },
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp)
-                )
+                        .padding(4.dp),
+                    contentScale = ContentScale.Crop
+                ) {
+                    when (painter.state) {
+                        is AsyncImagePainter.State.Loading -> {
+                            Box(contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        is AsyncImagePainter.State.Error -> {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Image,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(20.dp)
+                                )
+                            }
+                        }
+
+                        else -> {
+                            SubcomposeAsyncImageContent()
+                        }
+                    }
+                }
 
 
                 IconButton(onClick = {

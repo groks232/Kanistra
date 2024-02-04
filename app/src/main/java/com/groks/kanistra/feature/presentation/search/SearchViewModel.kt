@@ -10,6 +10,7 @@ import com.groks.kanistra.feature.domain.use_case.favorites.FavoritesUseCases
 import com.groks.kanistra.feature.domain.use_case.hint.HintUseCases
 import com.groks.kanistra.feature.domain.use_case.parts.FindParts
 import com.groks.kanistra.feature.domain.util.OrderType
+import com.groks.kanistra.feature.domain.util.SearchFilter
 import com.groks.kanistra.feature.domain.util.SearchOrder
 import com.groks.kanistra.feature.presentation.auth.AuthTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -145,9 +146,28 @@ class SearchViewModel @Inject constructor(
                     }
                 }
             }
+            is SearchEvent.Filter -> {
+                when(event.searchFilter) {
+                    is SearchFilter.Price -> {
+                        _state.value = _state.value.copy(
+                            partList = _state.value.partList.filter {
+                                it.price.toInt() > event.minPrice
+                            }.filter {
+                                it.price.toInt() < event.maxPrice
+                            }
+                        )
+                        onEvent(SearchEvent.Order(event.searchFilter.searchOrder))
+                    }
+                }
+            }
             is SearchEvent.ToggleOrderSection -> {
                 _state.value = _state.value.copy(
                     isOrderSectionVisible = !state.value.isOrderSectionVisible
+                )
+            }
+            is SearchEvent.ToggleFilterSection -> {
+                _state.value = _state.value.copy(
+                    isFilterSectionVisible = !state.value.isFilterSectionVisible
                 )
             }
         }

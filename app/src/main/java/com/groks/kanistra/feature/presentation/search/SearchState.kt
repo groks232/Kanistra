@@ -2,6 +2,7 @@ package com.groks.kanistra.feature.presentation.search
 
 import com.groks.kanistra.feature.domain.model.Part
 import com.groks.kanistra.feature.domain.util.OrderType
+import com.groks.kanistra.feature.domain.util.SearchFilter
 import com.groks.kanistra.feature.domain.util.SearchOrder
 
 data class SearchState(
@@ -9,5 +10,7 @@ data class SearchState(
     val partList: List<Part> = emptyList(),
     val error: String = "",
     val searchOrder: SearchOrder = SearchOrder.Price(OrderType.Ascending),
-    val isOrderSectionVisible: Boolean = false
+    val searchFilter: SearchFilter = SearchFilter.Price(searchOrder),
+    val isOrderSectionVisible: Boolean = false,
+    val isFilterSectionVisible: Boolean = false
 )

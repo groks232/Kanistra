@@ -1,6 +1,7 @@
 package com.groks.kanistra.feature.presentation.cart.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,12 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
-import com.groks.kanistra.R
+import coil.compose.SubcomposeAsyncImageContent
 import com.groks.kanistra.feature.domain.model.CartItem
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -47,8 +50,6 @@ fun CartItem(
 ){
     val amount = remember { mutableStateOf(cartItem.amount) }
 
-
-
     Row(
         modifier = Modifier
             .height(182.dp)
@@ -56,27 +57,43 @@ fun CartItem(
             .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         SubcomposeAsyncImage(
-            model = cartItem.image.ifBlank { R.drawable.placeholder },
-            loading = {
-                CircularProgressIndicator()
-            },
-            error = {
-                Image(
-                    painter = painterResource(id = R.drawable.placeholder),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                )
-            },
+            model = cartItem.image,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxHeight()
                 .width(115.dp)
                 .padding(top = 4.dp, start = 4.dp, end = 4.dp, bottom = 36.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
+                .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop
+            ) {
+            when (painter.state) {
+                is AsyncImagePainter.State.Loading -> {
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is AsyncImagePainter.State.Error -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.onBackground)
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.Image,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
+                }
+
+                else -> {
+                    SubcomposeAsyncImageContent()
+                }
+            }
+        }
 
         Column(
             modifier = Modifier

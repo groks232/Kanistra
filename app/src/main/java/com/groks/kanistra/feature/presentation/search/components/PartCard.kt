@@ -20,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -75,7 +76,8 @@ fun PartCard(
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(imageVector = Icons.Default.Image, contentDescription = null, modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(20.dp))
+                                    .padding(20.dp)
+                                )
                             }
                         }
 
@@ -102,7 +104,24 @@ fun PartCard(
 
         }
 
+        Text(text = "${part.price.toInt() + 1} ₽",
+            modifier = Modifier
+                .padding(top = 10.dp, start = 10.dp)
+                .align(alignment = Alignment.Start),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleLarge
+        )
+
         Text(text = part.title,
+            modifier = Modifier
+                .padding(10.dp)
+                .align(alignment = Alignment.Start),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Text(text = "${part.deliveryTime} дней",
             modifier = Modifier
                 .padding(10.dp)
                 .align(alignment = Alignment.Start),

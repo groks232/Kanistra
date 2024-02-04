@@ -13,6 +13,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,12 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
-import com.groks.kanistra.R
+import coil.compose.SubcomposeAsyncImageContent
 import com.groks.kanistra.feature.presentation.part_details.components.DotIndicator
 import com.groks.kanistra.feature.presentation.part_details.components.PriceRow
 
@@ -49,24 +52,35 @@ fun PartScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth()) {page ->
                     SubcomposeAsyncImage(
-                        model = if(state.part.images.isNotEmpty()) state.part.images[page] else R.drawable.placeholder,
-                        loading = {
-                            CircularProgressIndicator()
-                        },
-                        error = {
-                            Image(
-                                painter = painterResource(id = R.drawable.placeholder),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(4.dp)
-                            )
-                        },
+                        model = if(state.part.images.isNotEmpty()) state.part.images[page] else  "",
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(4.dp)
-                    )
+                            .padding(4.dp),
+                        contentScale = ContentScale.Crop
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                Box(contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    imageVector = Icons.Default.Image,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(4.dp)
+                                )
+                            }
+
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
                 }
 
                 DotIndicator(pagerState = pagerState, if(state.part.images.isNotEmpty()) state.part.images.size else state.part.images.size + 2)

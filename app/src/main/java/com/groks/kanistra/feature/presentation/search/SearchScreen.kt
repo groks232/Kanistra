@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.groks.kanistra.feature.presentation.search.components.FilterSection
 import com.groks.kanistra.feature.presentation.search.components.OrderSection
 import com.groks.kanistra.feature.presentation.search.components.SearchField
 import com.groks.kanistra.feature.presentation.search.components.SearchGrid
@@ -47,7 +48,7 @@ fun SearchScreen(
                     viewModel.onEvent(SearchEvent.Search)
                 },
                 onFilterClick = {
-                    viewModel.onEvent(SearchEvent.ToggleOrderSection)
+                    viewModel.onEvent(SearchEvent.ToggleFilterSection)
                 },
                 onSortClick = {
                     viewModel.onEvent(SearchEvent.ToggleOrderSection)
@@ -68,10 +69,30 @@ fun SearchScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp)
-                            .animateContentSize(),
+                            .animateContentSize()
+                            /*.background(MaterialTheme.colorScheme.secondaryContainer)*/,
                         searchOrder = state.searchOrder,
                         onOrderChange = {
                             viewModel.onEvent(SearchEvent.Order(it))
+                        }
+                    )
+                }
+                AnimatedVisibility(visible = state.isFilterSectionVisible) {
+                    FilterSection(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                            .animateContentSize()
+                            /*.background(MaterialTheme.colorScheme.secondaryContainer)*/,
+                        onFilterChange = { searchFilter, minPrice, maxPrice ->
+                            viewModel.onEvent(SearchEvent.Filter(searchFilter, minPrice, maxPrice))
+                        },
+                        searchFilter = state.searchFilter,
+                        minimalPrice = state.partList.minOf {
+                            it.price
+                        },
+                        maximalPrice = state.partList.maxOf {
+                            it.price
                         }
                     )
                 }

@@ -3,6 +3,7 @@ package com.groks.kanistra.feature.presentation.search
 import com.groks.kanistra.feature.domain.model.CartItem
 import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Hint
+import com.groks.kanistra.feature.domain.util.SearchFilter
 import com.groks.kanistra.feature.domain.util.SearchOrder
 
 sealed class SearchEvent {
@@ -13,7 +14,8 @@ sealed class SearchEvent {
     data class AddHint(val hint: Hint): SearchEvent()
     object GetHints: SearchEvent()
     data class DeleteHint(val hint: Hint): SearchEvent()
-
     data class Order(val searchOrder: SearchOrder): SearchEvent()
+    data class Filter(val searchFilter: SearchFilter, val minPrice: Int, val maxPrice: Int): SearchEvent()
     object ToggleOrderSection: SearchEvent()
+    object ToggleFilterSection: SearchEvent()
 }
