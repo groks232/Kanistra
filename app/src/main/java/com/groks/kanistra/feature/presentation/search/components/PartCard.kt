@@ -59,7 +59,10 @@ fun PartCard(
         ) {
             Box(modifier = Modifier.fillMaxSize()){
                 SubcomposeAsyncImage(
-                    model = if(part.images.isNotEmpty())part.images[0] else "",
+                    model = if(part.images.isNotEmpty()) {
+                        if(part.provider == "VAvto") "https://static.v-avto.ru${part.images[0]}"
+                        else part.images[0]
+                    } else "",
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()

@@ -1,7 +1,5 @@
 package com.groks.kanistra.feature.presentation.cart.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +19,7 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -78,14 +77,14 @@ fun CartItem(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.onBackground)
                     ) {
-                        Image(
+                        /*Image(
                             imageVector = Icons.Default.Image,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
-                        )
+                        )*/
+                        Icon(imageVector = Icons.Default.Image, contentDescription = null, modifier = Modifier.fillMaxSize())
                     }
                 }
 
@@ -98,15 +97,29 @@ fun CartItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 10.dp, start = 4.dp),
+                .padding(top = 6.dp, bottom = 10.dp, start = 4.dp),
             verticalArrangement = Arrangement.SpaceAround
         ) {
-            Text(
-                text = "${(cartItem.price.toInt() + 1) * amount.value} ₽",
-                style = MaterialTheme.typography.titleLarge,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${(cartItem.price.toInt() + 1) * amount.value} ₽",
+                    style = MaterialTheme.typography.titleLarge,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                )
+                CartItemDropDownMenu(
+                    onDeleteButtonClick = onRemove,
+                    onShareButtonClick = {
+                        /*TODO("Do later")*/
+                    }
+                )
+            }
             Text(
                 text = cartItem.title,
                 style = MaterialTheme.typography.bodyLarge,
@@ -123,7 +136,7 @@ fun CartItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
-                    .padding(vertical = 8.dp),
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Card(
@@ -212,7 +225,9 @@ fun CartItem(
                 }
 
                 Button(
-                    onClick = onRemove,
+                    onClick = {
+
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = 4.dp),

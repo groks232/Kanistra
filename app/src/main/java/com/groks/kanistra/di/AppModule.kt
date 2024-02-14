@@ -23,6 +23,7 @@ import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import com.groks.kanistra.feature.domain.use_case.cart.DeleteCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.EditCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.GetCart
+import com.groks.kanistra.feature.domain.use_case.cart.GetMultipleCartItems
 import com.groks.kanistra.feature.domain.use_case.favorites.AddToFavorites
 import com.groks.kanistra.feature.domain.use_case.favorites.DeleteFavoritesItem
 import com.groks.kanistra.feature.domain.use_case.favorites.FavoritesUseCases
@@ -119,7 +120,8 @@ object AppModule {
             addToCart = AddToCart(repository),
             deleteCartItem = DeleteCartItem(repository),
             editCartItem = EditCartItem(repository),
-            getCart = GetCart(repository)
+            getCart = GetCart(repository),
+            getMultipleCartItems = GetMultipleCartItems(repository)
         )
     }
 

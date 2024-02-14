@@ -23,6 +23,8 @@ interface KanistraRepository {
 
     suspend fun editCartItem(editCartItemBody: CartItem): SimpleResponse
 
+    suspend fun getMultipleCartItems(ids: String): List<CartItem>
+
     //Search
     suspend fun findParts(name: String): List<Part>
 

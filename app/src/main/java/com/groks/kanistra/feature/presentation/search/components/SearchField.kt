@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.groks.kanistra.feature.domain.model.Hint
 import com.groks.kanistra.feature.presentation.search.SearchEvent
+import com.groks.kanistra.feature.presentation.search.SearchState
 import com.groks.kanistra.feature.presentation.search.SearchViewModel
 import kotlinx.coroutines.launch
 
@@ -47,6 +48,7 @@ fun SearchField(
     onSearch: () -> Unit,
     onSortClick: () -> Unit,
     onFilterClick: () -> Unit,
+    state: SearchState
 ){
     var active by remember { mutableStateOf(false) }
 
@@ -142,12 +144,12 @@ fun SearchField(
                 .width(if (!active) 100.dp else 0.dp)
         ) {
             Box(modifier = Modifier.width(50.dp).fillMaxHeight(), contentAlignment = Alignment.Center){
-                IconButton(onClick = onSortClick) {
+                IconButton(onClick = onSortClick, enabled = state.partList.isNotEmpty()) {
                     Icon(imageVector = Icons.Default.Reorder, contentDescription = null)
                 }
             }
             Box(modifier = Modifier.width(50.dp).fillMaxHeight(), contentAlignment = Alignment.Center){
-                IconButton(onClick = onFilterClick) {
+                IconButton(onClick = onFilterClick, enabled = state.partList.isNotEmpty()) {
                     Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
                 }
             }

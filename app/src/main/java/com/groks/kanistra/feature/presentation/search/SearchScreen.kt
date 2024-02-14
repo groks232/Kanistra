@@ -12,11 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -28,16 +24,12 @@ import com.groks.kanistra.feature.presentation.search.components.OrderSection
 import com.groks.kanistra.feature.presentation.search.components.SearchField
 import com.groks.kanistra.feature.presentation.search.components.SearchGrid
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     navController: NavController,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    val topAppBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
-    val isToggled = remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier,
@@ -52,7 +44,8 @@ fun SearchScreen(
                 },
                 onSortClick = {
                     viewModel.onEvent(SearchEvent.ToggleOrderSection)
-                }
+                },
+                state = state
             )
         }
     ) { paddingValues ->

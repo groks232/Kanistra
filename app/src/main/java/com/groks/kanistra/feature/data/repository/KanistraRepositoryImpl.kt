@@ -38,6 +38,10 @@ class KanistraRepositoryImpl @Inject constructor(
         return api.editCartItem(editCartItemBody)
     }
 
+    override suspend fun getMultipleCartItems(ids: String): List<CartItem> {
+        return api.getMultipleCartItems(ids)
+    }
+
     override suspend fun findParts(name: String): List<Part> {
         return api.findParts(name)
     }

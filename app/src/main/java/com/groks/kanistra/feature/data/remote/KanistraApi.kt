@@ -44,6 +44,11 @@ interface KanistraApi {
         @Body editCartItemBody: CartItem
     ): SimpleResponse
 
+    @GET("/cart/getMultiple")
+    suspend fun getMultipleCartItems(
+        @Query("ids") ids: String
+    ): List<CartItem>
+
     //Search
     @GET("/search")
     suspend fun findParts(

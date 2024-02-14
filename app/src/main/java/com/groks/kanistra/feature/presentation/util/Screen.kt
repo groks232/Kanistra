@@ -21,6 +21,7 @@ sealed class Screen(
 ) {
     object AuthScreen: Screen("auth_screen_route")
     object PartDetails: Screen("part_details_screen_route")
+    object OrderScreen: Screen("order_screen_screen_route")
     object SearchScreen: Screen(
         "search_screen_route",
         R.string.search,

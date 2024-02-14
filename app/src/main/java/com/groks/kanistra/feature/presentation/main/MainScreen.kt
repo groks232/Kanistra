@@ -22,6 +22,7 @@ import com.groks.kanistra.feature.presentation.auth.AuthScreen
 import com.groks.kanistra.feature.presentation.cart.CartScreen
 import com.groks.kanistra.feature.presentation.favorites.FavoritesScreen
 import com.groks.kanistra.feature.presentation.main.components.BottomNavigationBar
+import com.groks.kanistra.feature.presentation.order.OrderScreen
 import com.groks.kanistra.feature.presentation.part_details.PartScreen
 import com.groks.kanistra.feature.presentation.profile.ProfileScreen
 import com.groks.kanistra.feature.presentation.search.SearchScreen
@@ -51,6 +52,7 @@ fun MainScreen(
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHostEntry(){
@@ -60,7 +62,7 @@ fun NavHostEntry(){
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = Screen.SearchScreen.route,
@@ -79,8 +81,39 @@ fun NavHostEntry(){
                 FavoritesScreen(navController = navController)
             }
             composable(route = Screen.PartDetails.route + "/{provider}/{id}"){
-                PartScreen()
+                PartScreen(navController = navController)
+            }
+            composable(route = Screen.OrderScreen.route + "/{ids}") {
+                OrderScreen(navController = navController)
             }
         }
     }
+
+    /*NavHost(
+        navController = navController,
+        startDestination = Screen.SearchScreen.route
+    ){
+        navigation("main", "main") {
+            Scaffold() {
+                composable(route = Screen.CartScreen.route) {
+                    CartScreen(navController = navController)
+                }
+                composable(route = Screen.SearchScreen.route){
+                    SearchScreen(navController = navController)
+                }
+                composable(route = Screen.ProfileScreen.route){
+                    ProfileScreen()
+                }
+                composable(route = Screen.FavoritesScreen.route){
+                    FavoritesScreen(navController = navController)
+                }
+            }
+        }
+        composable(route = Screen.PartDetails.route + "/{provider}/{id}"){
+            PartScreen(navController = navController)
+        }
+        composable(route = Screen.OrderScreen.route + "/{ids}") {
+            OrderScreen(navController = navController)
+        }
+    }*/
 }

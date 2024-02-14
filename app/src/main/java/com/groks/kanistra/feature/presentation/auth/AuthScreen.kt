@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -30,11 +32,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.groks.kanistra.feature.presentation.auth.components.PhoneField
 import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -81,32 +86,29 @@ fun AuthScreen(
                         .padding(20.dp)){
                         Spacer(modifier = Modifier
                             .fillMaxWidth()
-                            .height(150.dp))
-                        Text(text = "Welcome back!", fontSize = 40.sp)
+                            .height(100.dp))
+                        Text(text = "Добро пожаловать!", fontSize = 40.sp, lineHeight = 45.sp)
                         Spacer(modifier = Modifier
                             .fillMaxWidth()
                             .height(15.dp))
-                        Text(text = "Login below or create new account", fontSize = 20.sp)
+                        Text(text = "Войти или создать новый аккаунт", fontSize = 20.sp)
 
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp))
+                    }
 
-                        OutlinedTextField(
-                            value = loginState.text,
-                            onValueChange = {
-                                viewModel.onEvent(AuthEvent.EnteredLogin(it))
-                            },
-                            Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(10.dp),
-                            label = {
-                                Text(text = "Email")
-                            }
+
+                    Column(modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 20.dp)) {
+                        PhoneField(
+                            phone = loginState.text,
+                            onPhoneChanged = { viewModel.onEvent(AuthEvent.EnteredLogin(it)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp)
                         )
 
                         Spacer(modifier = Modifier
                             .fillMaxWidth()
-                            .height(35.dp))
+                            .height(5.dp))
 
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -129,14 +131,18 @@ fun AuthScreen(
                             },
                             label = {
                                 Text(text = "Password")
-                            }
+                            },
+                            maxLines = 1,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Go),
+                            keyboardActions = KeyboardActions(
+                                onGo = {
+                                    viewModel.onEvent(AuthEvent.Login)
+                                }
+                            )
                         )
-                    }
-
-
-                    Column(modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 20.dp)) {
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp))
                         Button(
                             onClick = {
                                 viewModel.onEvent(AuthEvent.Login)

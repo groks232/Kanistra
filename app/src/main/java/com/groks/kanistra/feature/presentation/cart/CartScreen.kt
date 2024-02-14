@@ -4,13 +4,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -19,6 +20,8 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -65,32 +68,40 @@ fun CartScreen(
             TopAppBar(
                 title = { Text(text = "Корзина") },
                 actions = {
-                    Text(text = "${state.cartList.size} элемент")
+                    Text(text = "${state.cartList.sumOf { it.amount }} элемент")
                 }
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { /*TODO()*/ },
+                onClick = {
+                    val orderString = state.cartList.joinToString(separator = ",") {
+                        "${it.id}"
+                    }
+
+                    navController.navigate(Screen.OrderScreen.route + "/${orderString}")
+                },
                 icon = { Icon(Icons.Filled.ShoppingCartCheckout, "Extended floating action button.") },
                 text = {
                     Column {
                         Text(text = "К оформлению", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            text = "${state.cartList.size} шт., ${sum.value} ₽",
+                            text = "${state.cartList.sumOf { it.amount }} шт., ${sum.value} ₽",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 },
+                expanded = true
             )
-        }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)) {
             sum.value = getSum(list = state.cartList)
             items(
-                state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate)}
+                state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }
             ) { cartItem ->
                 CartItem(
                     cartItem = cartItem,
@@ -135,6 +146,9 @@ fun CartScreen(
                         viewModel.onEvent(CartEvent.DeleteCartItem(cartItem))
                     }
                 )
+            }
+            item {
+                Spacer(modifier = Modifier.height(70.dp))
             }
         }
         if(state.error.isNotBlank()) {

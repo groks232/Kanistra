@@ -48,7 +48,10 @@ fun SearchGrid(
                             brand = it.brand,
                             price = it.price,
                             deliveryTime = it.deliveryTime,
-                            image = it.images.firstOrNull() ?: "",
+                            image = if(it.images.isNotEmpty()) {
+                                if(it.provider == "VAvto") "https://static.v-avto.ru${it.images[0]}"
+                                else it.images[0]
+                            } else "",
                             provider = it.provider,
                             creationDate = ""
                         )
@@ -60,7 +63,10 @@ fun SearchGrid(
                             provider = it.provider,
                             partId = it.partId,
                             amount = 1,
-                            image = if(it.images.isNotEmpty()) it.images[0] else "",
+                            image = if(it.images.isNotEmpty()) {
+                                if(it.provider == "VAvto") "https://static.v-avto.ru${it.images[0]}"
+                                else it.images[0]
+                            } else "",
                             title = it.title,
                             brand = it.brand,
                             price = it.price,

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:windowSoftInputMode="adjustResize"
         android:usesCleartextTraffic="true"
         android:name=".KanistraApplication"
         android:allowBackup="true"
