@@ -56,7 +56,7 @@ class AuthViewModel @Inject constructor(
                 viewModelScope.launch {
                     authUseCases.login(
                         LoginBody(
-                            phoneNumber = "8${loginFieldText.value.text}",
+                            phoneNumber = loginFieldText.value.text,
                             password = passwordFieldText.value.text
                         )
                     ).onEach { result ->

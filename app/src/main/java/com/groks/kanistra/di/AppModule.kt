@@ -130,7 +130,7 @@ object AppModule {
     fun provideAuthUseCases(kanistraRepository: KanistraRepository, dataStoreRepository: DataStoreRepository): AuthUseCases {
         return AuthUseCases(
             login = Login(kanistraRepository, dataStoreRepository),
-            register = Register(kanistraRepository),
+            register = Register(kanistraRepository, dataStoreRepository),
             forgotPassword = ForgotPassword(kanistraRepository),
             logOut = LogOut(dataStoreRepository)
         )

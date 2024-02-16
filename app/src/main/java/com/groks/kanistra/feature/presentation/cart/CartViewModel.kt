@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.groks.kanistra.common.Resource
 import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -55,7 +54,22 @@ class CartViewModel @Inject constructor(
                         event.cartItem
                     )
                 }
-                onEvent(CartEvent.GetCart)
+                cartUseCases.getCart().onEach { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _state.value = CartState(cartList = (result.data ?: mutableListOf()).toMutableList())
+                        }
+
+                        is Resource.Error -> {
+                            _state.value =
+                                CartState(error = result.message ?: "An unexpected error occurred.")
+                        }
+
+                        is Resource.Loading -> {
+                            //_state.value = CartState(isLoading = true)
+                        }
+                    }
+                }.launchIn(viewModelScope)
                 //_state.value = CartState(cartList = list.toMutableList())
             }
             is CartEvent.RestoreCartItem -> {
@@ -64,9 +78,25 @@ class CartViewModel @Inject constructor(
             is CartEvent.RefreshCart -> {
                 viewModelScope.launch {
                     _isRefreshing.value = true
-                    onEvent(CartEvent.GetCart)
-                    delay(1000L)
-                    _isRefreshing.value = false
+                    cartUseCases.getCart().onEach { result ->
+                        when (result) {
+                            is Resource.Success -> {
+                                _state.value = CartState(cartList = (result.data ?: mutableListOf()).toMutableList())
+                                _isRefreshing.value = false
+                            }
+
+                            is Resource.Error -> {
+                                _state.value =
+                                    CartState(error = result.message ?: "An unexpected error occurred.")
+                                _isRefreshing.value = false
+                            }
+
+                            is Resource.Loading -> {
+                                //_state.value = CartState(isLoading = true)
+                            }
+                        }
+                    }.launchIn(viewModelScope)
+                    //delay(1000L)
                 }
             }
             is CartEvent.IncreaseAmount -> {

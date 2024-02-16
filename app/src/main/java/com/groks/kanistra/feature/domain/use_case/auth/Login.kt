@@ -24,9 +24,13 @@ class Login @Inject constructor(
             emit(Resource.Error("Password field is blank"))
             return@flow
         }
+        val login = LoginBody(
+            phoneNumber = "8${loginBody.phoneNumber}",
+            password = loginBody.password
+        )
         try {
             emit(Resource.Loading())
-            val simpleResponse = kanistraRepository.getToken(loginBody)
+            val simpleResponse = kanistraRepository.getToken(login)
             dataStoreRepository.saveToken(simpleResponse.message)
             emit(Resource.Success(simpleResponse))
 
