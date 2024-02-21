@@ -83,7 +83,7 @@ class RegisterViewModel @Inject constructor(
                         RegisterBody(
                             fullName = nameFieldText.value.text,
                             phoneNumber = phoneFieldText.value.text,
-                            emailAddress = emailFieldText.value.text,
+                            email = emailFieldText.value.text,
                             password = passwordFieldText.value.text
                         )
                     ).onEach { result ->

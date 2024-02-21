@@ -1,6 +1,9 @@
 package com.groks.kanistra.feature.presentation.auth
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -46,7 +50,9 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel(),
+    onLogin: () -> Unit = {},
+    onRegisterClick: () -> Unit = {}
 ) {
     val state = viewModel.state.value
     val loginState = viewModel.loginFieldText.value
@@ -54,9 +60,14 @@ fun AuthScreen(
     var passwordVisibility: Boolean by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val activity = (LocalContext.current as? Activity)
+    BackHandler(enabled = true) {
+        activity?.moveTaskToBack(true)
+    }
+
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event){
+            when (event) {
                 is AuthViewModel.UiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = event.message
@@ -65,6 +76,7 @@ fun AuthScreen(
 
                 is AuthViewModel.UiEvent.Login -> {
                     viewModel.clearState()
+                    onLogin()
                 }
             }
         }
@@ -73,32 +85,41 @@ fun AuthScreen(
     Scaffold(snackbarHost = {
         SnackbarHost(snackbarHostState)
     }) {
-        when(state.isLoading){
+        when (state.isLoading) {
             true -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
             }
+
             false -> {
-                Box(modifier = Modifier.fillMaxSize()){
-                    Column(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp)){
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp))
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp)
+                    ) {
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                        )
                         Text(text = "Добро пожаловать!", fontSize = 40.sp, lineHeight = 45.sp)
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(15.dp))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(15.dp)
+                        )
                         Text(text = "Войти или создать новый аккаунт", fontSize = 20.sp)
 
                     }
 
 
-                    Column(modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 20.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 20.dp)
+                    ) {
                         PhoneField(
                             phone = loginState.text,
                             onPhoneChanged = { viewModel.onEvent(AuthEvent.EnteredLogin(it)) },
@@ -106,9 +127,21 @@ fun AuthScreen(
                             shape = RoundedCornerShape(10.dp)
                         )
 
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(5.dp))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(5.dp)
+                        )
+
+                        Text(
+                            text = "Забыли пароль?",
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(top = 4.dp)
+                                .clickable {
+                                    onRegisterClick()
+                                }
+                        )
 
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -120,10 +153,11 @@ fun AuthScreen(
                                     Icons.Filled.Visibility
                                 else Icons.Filled.VisibilityOff
 
-                                val description = if (passwordVisibility) "Hide password" else "Show password"
+                                val description =
+                                    if (passwordVisibility) "Hide password" else "Show password"
 
-                                IconButton(onClick = {passwordVisibility = !passwordVisibility}){
-                                    Icon(imageVector  = image, description)
+                                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                                    Icon(imageVector = image, description)
                                 }
                             },
                             onValueChange = {
@@ -133,16 +167,21 @@ fun AuthScreen(
                                 Text(text = "Password")
                             },
                             maxLines = 1,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Go),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Go
+                            ),
                             keyboardActions = KeyboardActions(
                                 onGo = {
                                     viewModel.onEvent(AuthEvent.Login)
                                 }
                             )
                         )
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(10.dp))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(10.dp)
+                        )
                         Button(
                             onClick = {
                                 viewModel.onEvent(AuthEvent.Login)
@@ -152,17 +191,30 @@ fun AuthScreen(
                                 .height(50.dp),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(text = "Log in",
-                                fontSize = 20.sp)
+                            Text(
+                                text = "Войти",
+                                fontSize = 20.sp
+                            )
                         }
 
                         Text(
-                            text = "Forgot Password",
+                            text = "Создать аккаунт",
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(20.dp)
+                                .clickable {
+                                    onRegisterClick()
+                                },
+                            fontSize = 20.sp
+                        )
+                        /*ClickableText(
+                            text = AnnotatedString("Forgot Password"),
+                            onClick = { onRegisterClick() },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(20.dp),
-                            fontSize = 20.sp
-                        )
+                            style = MaterialTheme.typography.bodyLarge
+                        )*/
                     }
                 }
             }

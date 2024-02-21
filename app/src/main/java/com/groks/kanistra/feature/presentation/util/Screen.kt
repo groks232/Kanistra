@@ -20,6 +20,7 @@ sealed class Screen(
     var outlinedIcon: ImageVector? = null
 ) {
     object AuthScreen: Screen("auth_screen_route")
+    object RegisterScreen: Screen("register_screen_route")
     object PartDetails: Screen("part_details_screen_route")
     object OrderScreen: Screen("order_screen_screen_route")
     object SearchScreen: Screen(

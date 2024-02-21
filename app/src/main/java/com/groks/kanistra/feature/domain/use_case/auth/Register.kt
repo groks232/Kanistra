@@ -24,7 +24,7 @@ class Register @Inject constructor(
         emit(Resource.Error("Phone is blank"))
         return@flow
     }
-        if (registerBody.emailAddress.isBlank()){
+        if (registerBody.email.isBlank()){
             emit(Resource.Error("Email is blank"))
             return@flow
         }
@@ -35,7 +35,7 @@ class Register @Inject constructor(
         val register = RegisterBody(
             fullName = registerBody.fullName,
             phoneNumber = "8${registerBody.phoneNumber}",
-            emailAddress = registerBody.emailAddress,
+            email = registerBody.email,
             password = registerBody.password
         )
         try {

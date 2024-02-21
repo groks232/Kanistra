@@ -6,19 +6,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,7 +31,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.groks.kanistra.feature.domain.model.Hint
 import com.groks.kanistra.feature.presentation.search.SearchEvent
@@ -46,7 +43,6 @@ import kotlinx.coroutines.launch
 fun SearchField(
     viewModel: SearchViewModel,
     onSearch: () -> Unit,
-    onSortClick: () -> Unit,
     onFilterClick: () -> Unit,
     state: SearchState
 ){
@@ -60,8 +56,7 @@ fun SearchField(
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.8f)
-                .clip(RoundedCornerShape(32.dp, 32.dp)),
+                .weight(0.8f),
             placeholder = {
                 Text(text = "Search")
             },
@@ -141,21 +136,13 @@ fun SearchField(
             modifier = Modifier
                 .height(65.dp)
                 .animateContentSize()
-                .width(if (!active) 100.dp else 0.dp)
+                .width(if (state.partList.isEmpty() || active) 0.dp else 50.dp)
         ) {
-            Box(modifier = Modifier.width(50.dp).fillMaxHeight(), contentAlignment = Alignment.Center){
-                IconButton(onClick = onSortClick, enabled = state.partList.isNotEmpty()) {
-                    Icon(imageVector = Icons.Default.Reorder, contentDescription = null)
-                }
-            }
-            Box(modifier = Modifier.width(50.dp).fillMaxHeight(), contentAlignment = Alignment.Center){
-                IconButton(onClick = onFilterClick, enabled = state.partList.isNotEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                IconButton(onClick = onFilterClick) {
                     Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
                 }
             }
         }
-
-
     }
-
 }

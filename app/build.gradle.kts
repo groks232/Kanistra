@@ -81,10 +81,10 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     //icons
-    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 
     //material3
-    implementation("androidx.compose.material3:material3:1.2.0-rc01")
+    implementation("androidx.compose.material3:material3:1.2.0")
 
     //coli(to download image)
     implementation("io.coil-kt:coil-compose:2.4.0")

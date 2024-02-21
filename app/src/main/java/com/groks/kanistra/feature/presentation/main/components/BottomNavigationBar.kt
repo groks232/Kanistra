@@ -3,9 +3,11 @@ package com.groks.kanistra.feature.presentation.main.components
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -34,9 +36,7 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier){
 
             NavigationBarItem(
                 alwaysShowLabel = false,
-/*
                 label = { Text(stringResource(id = screen.resourceId!!)) },
-*/
                 icon = { Icon(if(selected)screen.filledIcon!! else screen.outlinedIcon!!, screen.route) },
                 selected = selected,
                 onClick = {
@@ -45,7 +45,7 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier){
                             saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = true
+                        restoreState = false
                     }
                 }
             )

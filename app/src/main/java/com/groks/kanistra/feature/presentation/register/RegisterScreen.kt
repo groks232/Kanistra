@@ -44,8 +44,9 @@ import kotlinx.coroutines.flow.collectLatest
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel = hiltViewModel()
-) {
+    viewModel: RegisterViewModel = hiltViewModel(),
+    onRegister: () -> Unit = {}
+    ) {
     val state = viewModel.state.value
     val passwordFieldState = viewModel.passwordFieldText.value
     val nameFieldState = viewModel.nameFieldText.value
@@ -64,7 +65,7 @@ fun RegisterScreen(
                 }
 
                 is RegisterViewModel.UiEvent.Register -> {
-
+                    onRegister()
                 }
             }
         }
@@ -96,33 +97,45 @@ fun RegisterScreen(
                     }
 
 
-                    Column(modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 20.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 20.dp)
+                    ) {
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = nameFieldState.text,
                             onValueChange = {
                                 viewModel.onEvent(RegisterEvent.EnteredName(it))
-                            }
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            label = {
+                                Text(text = "Name")
+                            },
+                            maxLines = 1,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
                         )
+
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = emailFieldState.text,
                             onValueChange = {
                                 viewModel.onEvent(RegisterEvent.EnteredEmail(it))
-                            }
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            label = {
+                                Text(text = "Email")
+                            },
+                            maxLines = 1,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                         )
+
                         PhoneField(
                             phone = phoneFieldState.text,
                             onPhoneChanged = { viewModel.onEvent(RegisterEvent.EnteredPhoneNumber(it)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(10.dp)
                         )
-
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(5.dp))
 
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -154,9 +167,7 @@ fun RegisterScreen(
                                 }
                             )
                         )
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(10.dp))
+
                         Button(
                             onClick = {
                                 viewModel.onEvent(RegisterEvent.Register)
@@ -166,12 +177,12 @@ fun RegisterScreen(
                                 .height(50.dp),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(text = "Log in",
+                            Text(text = "Зарегистрироваться",
                                 fontSize = 20.sp)
                         }
 
                         Text(
-                            text = "Forgot Password",
+                            text = "Войти",
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(20.dp),

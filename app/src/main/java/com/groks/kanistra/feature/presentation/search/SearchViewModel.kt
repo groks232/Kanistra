@@ -5,17 +5,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.groks.kanistra.common.Resource
+import com.groks.kanistra.common.ViewState
 import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import com.groks.kanistra.feature.domain.use_case.favorites.FavoritesUseCases
 import com.groks.kanistra.feature.domain.use_case.hint.HintUseCases
+import com.groks.kanistra.feature.domain.use_case.main.CheckToken
 import com.groks.kanistra.feature.domain.use_case.parts.FindParts
 import com.groks.kanistra.feature.domain.util.OrderType
 import com.groks.kanistra.feature.domain.util.SearchFilter
 import com.groks.kanistra.feature.domain.util.SearchOrder
 import com.groks.kanistra.feature.presentation.auth.AuthTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +29,8 @@ class SearchViewModel @Inject constructor(
     private val findParts: FindParts,
     private val cartUseCases: CartUseCases,
     private val hintUseCases: HintUseCases,
-    private val favoritesUseCases: FavoritesUseCases
+    private val favoritesUseCases: FavoritesUseCases,
+    checkToken: CheckToken
 ): ViewModel(){
     private val _state = mutableStateOf(SearchState())
     val state: State<SearchState> = _state
@@ -36,6 +42,17 @@ class SearchViewModel @Inject constructor(
 
     private val _hintState = mutableStateOf(HintState())
     val hintState: State<HintState> = _hintState
+
+    val viewState = checkToken.invoke().map { loggedIn ->
+        when(loggedIn){
+            true -> {
+                ViewState.LoggedIn
+            }
+            false -> {
+                ViewState.NotLoggedIn
+            }
+        }
+    }.stateIn(scope = viewModelScope, started = SharingStarted.Lazily, initialValue = ViewState.Loading)
 
 
     fun onEvent(event: SearchEvent) {
@@ -64,7 +81,8 @@ class SearchViewModel @Inject constructor(
                     when(result) {
                         is Resource.Success -> {
                             _state.value = SearchState(
-                                partList = result.data ?: emptyList()
+                                partList = result.data ?: emptyList(),
+                                modifiedPartList = result.data ?: emptyList()
                             )
                         }
 
@@ -115,12 +133,14 @@ class SearchViewModel @Inject constructor(
                         when(event.searchOrder) {
                             is SearchOrder.Price -> {
                                 _state.value = _state.value.copy(
+                                    modifiedPartList = _state.value.modifiedPartList.sortedBy {it.price },
                                     partList = _state.value.partList.sortedBy {it.price },
                                     searchOrder = SearchOrder.Price(OrderType.Ascending)
                                 )
                             }
                             is SearchOrder.DeliveryDate -> {
                                 _state.value = _state.value.copy(
+                                    modifiedPartList = _state.value.modifiedPartList.sortedByDescending { it.deliveryTime },
                                     partList = _state.value.partList.sortedByDescending { it.deliveryTime },
                                     searchOrder = SearchOrder.DeliveryDate(OrderType.Ascending)
                                 )
@@ -132,12 +152,14 @@ class SearchViewModel @Inject constructor(
                         when(event.searchOrder) {
                             is SearchOrder.Price -> {
                                 _state.value = _state.value.copy(
+                                    modifiedPartList = _state.value.modifiedPartList.sortedByDescending { it.price },
                                     partList = _state.value.partList.sortedByDescending { it.price },
                                     searchOrder = SearchOrder.Price(OrderType.Descending)
                                 )
                             }
                             is SearchOrder.DeliveryDate -> {
                                 _state.value = _state.value.copy(
+                                    modifiedPartList = _state.value.modifiedPartList.sortedBy { it.deliveryTime },
                                     partList = _state.value.partList.sortedBy { it.deliveryTime },
                                     searchOrder = SearchOrder.DeliveryDate(OrderType.Descending)
                                 )
@@ -150,15 +172,37 @@ class SearchViewModel @Inject constructor(
                 when(event.searchFilter) {
                     is SearchFilter.Price -> {
                         _state.value = _state.value.copy(
-                            partList = _state.value.partList.filter {
-                                it.price.toInt() > event.minPrice
-                            }.filter {
-                                it.price.toInt() < event.maxPrice
+                            modifiedPartList = _state.value.partList
+                        )
+                        _state.value = _state.value.copy(
+                            modifiedPartList = _state.value.modifiedPartList.filter { part ->
+                                part.price.toInt() > (event.searchFilter.minimal
+                                    ?: _state.value.partList.minOf { it.deliveryTime })
+                            }.filter { part ->
+                                part.price.toInt() < (event.searchFilter.maximal
+                                    ?: _state.value.partList.maxOf { it.deliveryTime })
                             }
                         )
-                        onEvent(SearchEvent.Order(event.searchFilter.searchOrder))
+                    }
+                    is SearchFilter.DeliveryDate -> {
+                        _state.value = _state.value.copy(
+                            modifiedPartList = _state.value.partList.filter { part ->
+                                part.deliveryTime > (event.searchFilter.minimal
+                                    ?: _state.value.partList.minOf { part.deliveryTime })
+                            }.filter { part ->
+                                part.deliveryTime < (event.searchFilter.maximal
+                                    ?: _state.value.partList.maxOf { it.deliveryTime })
+                            }
+                        )
                     }
                 }
+            }
+            is SearchEvent.ResetFilters -> {
+                _state.value = _state.value.copy(
+                    modifiedPartList = _state.value.partList,
+                    searchOrder = SearchOrder.Price(OrderType.Ascending),
+                    searchFilter = SearchFilter.Price(null, null)
+                )
             }
             is SearchEvent.ToggleOrderSection -> {
                 _state.value = _state.value.copy(

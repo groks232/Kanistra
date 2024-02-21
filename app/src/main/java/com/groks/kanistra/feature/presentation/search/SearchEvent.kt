@@ -15,7 +15,8 @@ sealed class SearchEvent {
     object GetHints: SearchEvent()
     data class DeleteHint(val hint: Hint): SearchEvent()
     data class Order(val searchOrder: SearchOrder): SearchEvent()
-    data class Filter(val searchFilter: SearchFilter, val minPrice: Int, val maxPrice: Int): SearchEvent()
+    data class Filter(val searchFilter: SearchFilter): SearchEvent()
+    object ResetFilters: SearchEvent()
     object ToggleOrderSection: SearchEvent()
     object ToggleFilterSection: SearchEvent()
 }

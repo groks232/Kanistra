@@ -1,83 +1,105 @@
 package com.groks.kanistra.feature.presentation.search
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.groks.kanistra.common.ViewState
 import com.groks.kanistra.feature.presentation.search.components.FilterSection
 import com.groks.kanistra.feature.presentation.search.components.OrderSection
 import com.groks.kanistra.feature.presentation.search.components.SearchField
 import com.groks.kanistra.feature.presentation.search.components.SearchGrid
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     navController: NavController,
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(),
+    onNavigateToLoginScreen: () -> Unit = {},
 ) {
     val state = viewModel.state.value
 
-    Scaffold(
-        modifier = Modifier,
-        topBar = {
-            SearchField(
-                viewModel = viewModel,
-                onSearch = {
-                    viewModel.onEvent(SearchEvent.Search)
-                },
-                onFilterClick = {
-                    viewModel.onEvent(SearchEvent.ToggleFilterSection)
-                },
-                onSortClick = {
-                    viewModel.onEvent(SearchEvent.ToggleOrderSection)
-                },
-                state = state
-            )
-        }
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+    val viewState by viewModel.viewState.collectAsState()
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    /*.animateContentSize()
-                    .height(if (isToggled.value) 300.dp else 0.dp)*/
-            ) {
-                AnimatedVisibility(visible = state.isOrderSectionVisible) {
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    when(viewState){
+        is ViewState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()){
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            }
+        }
+        is ViewState.NotLoggedIn -> {
+            LaunchedEffect(true) {
+                onNavigateToLoginScreen()
+            }
+        }
+        is ViewState.LoggedIn -> {
+            if (showBottomSheet) {
+                /*val windowInsets = if (edgeToEdgeEnabled)
+                    WindowInsets(0) else BottomSheetDefaults.windowInsets*/
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet = false
+                    },
+                    sheetState = sheetState
+                ) {
+                    Button(
+                        modifier = Modifier.align(Alignment.End),
+                        onClick = {
+                            viewModel.onEvent(SearchEvent.ResetFilters)
+                        }
+                    ) {
+                        Text(text = "Сбросить фильтр")
+                    }
                     OrderSection(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp)
                             .animateContentSize()
-                            /*.background(MaterialTheme.colorScheme.secondaryContainer)*/,
+                        /*.background(MaterialTheme.colorScheme.secondaryContainer)*/,
                         searchOrder = state.searchOrder,
                         onOrderChange = {
                             viewModel.onEvent(SearchEvent.Order(it))
                         }
                     )
-                }
-                AnimatedVisibility(visible = state.isFilterSectionVisible) {
+
                     FilterSection(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp)
                             .animateContentSize()
-                            /*.background(MaterialTheme.colorScheme.secondaryContainer)*/,
-                        onFilterChange = { searchFilter, minPrice, maxPrice ->
-                            viewModel.onEvent(SearchEvent.Filter(searchFilter, minPrice, maxPrice))
+                        /*.background(MaterialTheme.colorScheme.secondaryContainer)*/,
+                        onFilterChange = { searchFilter ->
+                            viewModel.onEvent(SearchEvent.Filter(searchFilter))
                         },
                         searchFilter = state.searchFilter,
                         minimalPrice = state.partList.minOf {
@@ -87,36 +109,57 @@ fun SearchScreen(
                             it.price
                         }
                     )
+                    
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
 
-            SearchGrid(
-                navController = navController,
-                parts = state.partList,
-                paddingValues = paddingValues,
-                viewModel = viewModel
-            )
-        }
-        if(state.error.isNotBlank()) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)) {
-                Text(
-                    text = state.error,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .align(Alignment.Center)
-                )
-            }
-        }
-        if(state.isLoading) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            Scaffold(
+                modifier = Modifier,
+                topBar = {
+                    SearchField(
+                        viewModel = viewModel,
+                        onSearch = {
+                            viewModel.onEvent(SearchEvent.Search)
+                        },
+                        onFilterClick = {
+                            //viewModel.onEvent(SearchEvent.ToggleFilterSection)
+                            showBottomSheet = true
+                        },
+                        state = state
+                    )
+                }
+            ) { paddingValues ->
+                Column(modifier = Modifier.padding(paddingValues)) {
+                    SearchGrid(
+                        navController = navController,
+                        parts = state.modifiedPartList,
+                        paddingValues = paddingValues,
+                        viewModel = viewModel
+                    )
+                }
+                if(state.error.isNotBlank()) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)) {
+                        Text(
+                            text = state.error,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+                if(state.isLoading) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
             }
         }
     }
