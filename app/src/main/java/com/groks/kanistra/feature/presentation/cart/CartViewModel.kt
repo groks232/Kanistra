@@ -6,8 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.groks.kanistra.common.Resource
 import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
+import com.groks.kanistra.feature.presentation.search.SearchEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,6 +26,9 @@ class CartViewModel @Inject constructor(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     init {
         onEvent(CartEvent.GetCart)
@@ -54,23 +60,13 @@ class CartViewModel @Inject constructor(
                         event.cartItem
                     )
                 }
-                cartUseCases.getCart().onEach { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            _state.value = CartState(cartList = (result.data ?: mutableListOf()).toMutableList())
-                        }
+                _state.value = _state.value.copy(cartList = _state.value.cartList.filter {
+                    it.id != event.cartItem.id
+                }.toMutableList())
 
-                        is Resource.Error -> {
-                            _state.value =
-                                CartState(error = result.message ?: "An unexpected error occurred.")
-                        }
-
-                        is Resource.Loading -> {
-                            //_state.value = CartState(isLoading = true)
-                        }
-                    }
-                }.launchIn(viewModelScope)
-                //_state.value = CartState(cartList = list.toMutableList())
+                viewModelScope.launch {
+                    cartUseCases.getCartAmount()
+                }
             }
             is CartEvent.RestoreCartItem -> {
 
@@ -114,5 +110,10 @@ class CartViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String): UiEvent()
+        data class ShowErrorSnackbar(val message: String, val searchEvent: SearchEvent): UiEvent()
     }
 }

@@ -23,6 +23,7 @@ import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
 import com.groks.kanistra.feature.domain.use_case.cart.DeleteCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.EditCartItem
 import com.groks.kanistra.feature.domain.use_case.cart.GetCart
+import com.groks.kanistra.feature.domain.use_case.cart.GetCartAmount
 import com.groks.kanistra.feature.domain.use_case.cart.GetMultipleCartItems
 import com.groks.kanistra.feature.domain.use_case.favorites.AddToFavorites
 import com.groks.kanistra.feature.domain.use_case.favorites.DeleteFavoritesItem
@@ -115,13 +116,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCartUseCases(repository: KanistraRepository): CartUseCases {
+    fun provideCartUseCases(kanistraRepository: KanistraRepository, dataStoreRepository: DataStoreRepository): CartUseCases {
         return CartUseCases(
-            addToCart = AddToCart(repository),
-            deleteCartItem = DeleteCartItem(repository),
-            editCartItem = EditCartItem(repository),
-            getCart = GetCart(repository),
-            getMultipleCartItems = GetMultipleCartItems(repository)
+            addToCart = AddToCart(kanistraRepository),
+            deleteCartItem = DeleteCartItem(kanistraRepository),
+            editCartItem = EditCartItem(kanistraRepository),
+            getCart = GetCart(kanistraRepository),
+            getMultipleCartItems = GetMultipleCartItems(kanistraRepository),
+            getCartAmount = GetCartAmount(kanistraRepository, dataStoreRepository)
         )
     }
 

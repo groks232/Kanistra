@@ -4,37 +4,21 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -48,13 +32,22 @@ import com.groks.kanistra.feature.presentation.profile.ProfileScreen
 import com.groks.kanistra.feature.presentation.register.RegisterScreen
 import com.groks.kanistra.feature.presentation.search.SearchScreen
 import com.groks.kanistra.feature.presentation.util.Screen
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun MainScreen(
+    viewModel: MainViewModel = hiltViewModel()
+) {
+    val cartAmount by viewModel.cartAmount.collectAsState()
+    NavHostEntry(cartAmount)
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavHostEntry() {
+fun NavHostEntry(
+    badgeCount: Int
+) {
     val navController = rememberNavController()
 
     var isBottomNavVisible by remember { mutableStateOf(true) }
@@ -66,7 +59,10 @@ fun NavHostEntry() {
             ) {
                 BottomNavigationBar(
                     navController = navController,
-                    modifier = Modifier.height(65.dp).windowInsetsPadding(WindowInsets.safeDrawing)/*.animateContentSize()*/
+                    modifier = Modifier
+                        .height(65.dp)
+                        .windowInsetsPadding(WindowInsets.safeDrawing),
+                    badgeCount = badgeCount
                 )
             }
         }
@@ -94,64 +90,12 @@ fun NavHostEntry() {
                 isBottomNavVisible = true
             }
             composable(route = Screen.ProfileScreen.route) {
-                val coroutineScope = rememberCoroutineScope()
-                val modalSheetState = rememberModalBottomSheetState(
-                    skipPartiallyExpanded = true
-                )
-                var showBottomSheet by remember { mutableStateOf(true) }
-
-                val scaffoldState = rememberBottomSheetScaffoldState(
-                    bottomSheetState = SheetState(
-                        skipPartiallyExpanded = false, // pass false here
-                        density = LocalDensity.current,
-                        initialValue = SheetValue.Expanded
-                    )
-                )
-
-
-                BottomSheetScaffold(
-                    sheetMaxWidth = Dp.Unspecified,
-                    sheetShape = RoundedCornerShape(10),
-                    scaffoldState = scaffoldState,
-                    sheetContent = {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(128.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Swipe up to expand sheet")
-                        }
-
-                        // sheet content in the expanded state
-                        Column(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(64.dp)
-                                .verticalScroll(rememberScrollState()),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            for (i in 0..20) Text("Sheet content")
-
-                            Button(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        scaffoldState.bottomSheetState.hide()
-                                    }
-                                }
-                            ) {
-                                Text(text = "Click to collapse sheet")
-                            }
-                        }
+                ProfileScreen(
+                    onNavigateToLoginScreen = {
+                        navController.navigate(Screen.AuthScreen.route)
                     }
-                ) { paddingValues ->
-                    ProfileScreen(
-                        onNavigateToLoginScreen = {
-                            navController.navigate(Screen.AuthScreen.route)
-                        }
-                    )
-                    isBottomNavVisible = true
-                }
+                )
+                isBottomNavVisible = true
             }
             composable(route = Screen.PartDetails.route + "/{provider}/{id}") {
                 PartScreen(navController = navController)

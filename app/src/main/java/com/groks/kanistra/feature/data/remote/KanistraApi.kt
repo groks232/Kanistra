@@ -5,8 +5,8 @@ import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
 import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Part
-import com.groks.kanistra.feature.domain.model.SimpleResponse
 import com.groks.kanistra.feature.domain.model.User
+import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -18,31 +18,34 @@ interface KanistraApi {
     @POST("/register")
     suspend fun register(
         @Body registerBody: RegisterBody
-    ): SimpleResponse
+    ): ResponseBody
 
     @POST("/login")
     suspend fun getToken(
         @Body loginBody: LoginBody
-    ): SimpleResponse
+    ): ResponseBody
 
     //Cart
     @POST("/cart/add")
     suspend fun addToCart(
         @Body addToCartBody: CartItem
-    ): SimpleResponse
+    ): ResponseBody
 
     @GET("/cart/getAll")
     suspend fun getUserCart(): List<CartItem>
 
+    @GET("/cart/amount")
+    suspend fun getCartAmount(): Int
+
     @DELETE("/cart/delete")
     suspend fun deleteItemFromCart(
         @Query("id") id: String
-    ): SimpleResponse
+    ): ResponseBody
 
     @POST("/cart/update")
     suspend fun editCartItem(
         @Body editCartItemBody: CartItem
-    ): SimpleResponse
+    ): ResponseBody
 
     @GET("/cart/getMultiple")
     suspend fun getMultipleCartItems(
@@ -68,18 +71,18 @@ interface KanistraApi {
     @POST("/user/edit")
     suspend fun editUserInfo(
         @Body user: User
-    ): SimpleResponse
+    ): ResponseBody
 
     @DELETE("/user/delete")
     suspend fun deleteUser(
         @Body user: User
-    ): SimpleResponse
+    ): ResponseBody
 
     //Favorites
     @POST("/favorites/add")
     suspend fun addToFavorites(
         @Body favorite: FavoritesItem
-    ): SimpleResponse
+    ): ResponseBody
 
     @GET("/favorites/get")
     suspend fun getFavorites(): List<FavoritesItem>
@@ -87,5 +90,5 @@ interface KanistraApi {
     @DELETE("/favorites/delete")
     suspend fun deleteFromFavorites(
         @Query("id") id: String
-    ): SimpleResponse
+    ): ResponseBody
 }

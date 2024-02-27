@@ -16,7 +16,9 @@ import com.groks.kanistra.feature.domain.util.SearchFilter
 import com.groks.kanistra.feature.domain.util.SearchOrder
 import com.groks.kanistra.feature.presentation.auth.AuthTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -43,6 +45,9 @@ class SearchViewModel @Inject constructor(
     private val _hintState = mutableStateOf(HintState())
     val hintState: State<HintState> = _hintState
 
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
     val viewState = checkToken.invoke().map { loggedIn ->
         when(loggedIn){
             true -> {
@@ -63,10 +68,30 @@ class SearchViewModel @Inject constructor(
                 )
             }
             is SearchEvent.AddToCart -> {
+                cartUseCases.addToCart(cartItem = event.cartItem).onEach {  result ->
+                    when(result) {
+                        is Resource.Success -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.data ?: "Something happened."
+                                )
+                            )
+                        }
+                        is Resource.Error -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowErrorSnackbar(
+                                    message = result.message ?: "Unexpected error occurred.",
+                                    searchEvent = event
+                                )
+                            )
+                        }
+                        is Resource.Loading -> {
+
+                        }
+                    }
+                }.launchIn(viewModelScope)
                 viewModelScope.launch {
-                    cartUseCases.addToCart(
-                        cartItem = event.cartItem
-                    )
+                    cartUseCases.getCartAmount()
                 }
             }
             is SearchEvent.AddToFavorites -> {
@@ -90,11 +115,12 @@ class SearchViewModel @Inject constructor(
                             _state.value = SearchState(
                                 error = result.message ?: "unexpected error occurred"
                             )
-                            /*_eventFlow.emit(
-                                AuthViewModel.UiEvent.ShowSnackbar(
-                                    message = result.message ?: "Unexpected error occurred."
+                            _eventFlow.emit(
+                                UiEvent.ShowErrorSnackbar(
+                                    message = result.message ?: "Unexpected error occurred.",
+                                    searchEvent = event
                                 )
-                            )*/
+                            )
                         }
 
                         is Resource.Loading -> {
@@ -215,5 +241,10 @@ class SearchViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String): UiEvent()
+        data class ShowErrorSnackbar(val message: String, val searchEvent: SearchEvent): UiEvent()
     }
 }

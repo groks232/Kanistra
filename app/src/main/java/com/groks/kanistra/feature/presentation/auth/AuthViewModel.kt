@@ -70,6 +70,7 @@ class AuthViewModel @Inject constructor(
                                 _state.value = AuthState(
                                     error = result.message ?: "unexpected error occurred"
                                 )
+
                                 _eventFlow.emit(
                                     UiEvent.ShowSnackbar(
                                         message = result.message ?: "Unexpected error occurred."

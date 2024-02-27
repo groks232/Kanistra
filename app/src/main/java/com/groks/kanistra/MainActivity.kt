@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import coil.Coil
 import coil.ImageLoader
 import com.groks.kanistra.feature.domain.util.initUntrustImageLoader
-import com.groks.kanistra.feature.presentation.main.NavHostEntry
+import com.groks.kanistra.feature.presentation.main.MainScreen
 import com.groks.kanistra.ui.theme.KanistraTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHostEntry()
+                    MainScreen()
 
                     //Ёбаный костыль чтобы скачивать картинки
                     //с домена с самоподписаннами сертификатами.

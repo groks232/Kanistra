@@ -17,34 +17,39 @@ sealed class Screen(
     val route: String,
     @StringRes val resourceId: Int? = null,
     var filledIcon: ImageVector? = null,
-    var outlinedIcon: ImageVector? = null
+    var outlinedIcon: ImageVector? = null,
+    var hasBadge: Boolean
 ) {
-    object AuthScreen: Screen("auth_screen_route")
-    object RegisterScreen: Screen("register_screen_route")
-    object PartDetails: Screen("part_details_screen_route")
-    object OrderScreen: Screen("order_screen_screen_route")
+    object AuthScreen: Screen("auth_screen_route", hasBadge = false)
+    object RegisterScreen: Screen("register_screen_route", hasBadge = false)
+    object PartDetails: Screen("part_details_screen_route", hasBadge = false)
+    object OrderScreen: Screen("order_screen_screen_route", hasBadge = false)
     object SearchScreen: Screen(
         "search_screen_route",
         R.string.search,
         Icons.Filled.Home,
-        Icons.Outlined.Home
+        Icons.Outlined.Home,
+        hasBadge = false
     )
     object CartScreen: Screen(
         "cart_screen_route",
         R.string.cart,
         Icons.Filled.ShoppingCart,
-        Icons.Outlined.ShoppingCart
+        Icons.Outlined.ShoppingCart,
+        hasBadge = true
     )
     object ProfileScreen: Screen(
         "profile_screen_route",
         R.string.profile,
         Icons.Filled.AccountCircle,
-        Icons.Outlined.AccountCircle
+        Icons.Outlined.AccountCircle,
+        hasBadge = false
     )
     object FavoritesScreen: Screen(
         "favorites_screen_route",
         R.string.favorites,
         Icons.Filled.Favorite,
-        Icons.Outlined.FavoriteBorder
+        Icons.Outlined.FavoriteBorder,
+        hasBadge = false
     )
 }

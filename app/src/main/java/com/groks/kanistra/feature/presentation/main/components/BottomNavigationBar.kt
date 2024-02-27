@@ -1,5 +1,7 @@
 package com.groks.kanistra.feature.presentation.main.components
 
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -15,7 +17,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.groks.kanistra.feature.presentation.util.Screen
 
 @Composable
-fun BottomNavigationBar(navController: NavController, modifier: Modifier){
+fun BottomNavigationBar(
+    navController: NavController,
+    modifier: Modifier,
+    badgeCount: Int
+) {
     val items = listOf(
         Screen.SearchScreen,
         Screen.CartScreen,
@@ -30,17 +36,32 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier){
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-        items.forEach {screen ->
+        items.forEach { screen ->
 
             val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 
             NavigationBarItem(
                 alwaysShowLabel = false,
                 label = { Text(stringResource(id = screen.resourceId!!)) },
-                icon = { Icon(if(selected)screen.filledIcon!! else screen.outlinedIcon!!, screen.route) },
+                icon = {
+                    BadgedBox(
+                        badge = {
+                            if (screen.hasBadge) {
+                                Badge {
+                                    Text(text = badgeCount.toString()) //TODO("Implement later")
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            if (selected) screen.filledIcon!! else screen.outlinedIcon!!,
+                            screen.route
+                        )
+                    }
+                },
                 selected = selected,
                 onClick = {
-                    navController.navigate(screen.route){
+                    navController.navigate(screen.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

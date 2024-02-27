@@ -2,7 +2,6 @@ package com.groks.kanistra.feature.domain.use_case.auth
 
 import com.groks.kanistra.common.Resource
 import com.groks.kanistra.feature.data.remote.dto.RegisterBody
-import com.groks.kanistra.feature.domain.model.SimpleResponse
 import com.groks.kanistra.feature.domain.repository.DataStoreRepository
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +14,7 @@ class Register @Inject constructor(
     private val kanistraRepository: KanistraRepository,
     private val dataStoreRepository: DataStoreRepository
 ) {
-    operator fun invoke(registerBody: RegisterBody): Flow<Resource<SimpleResponse>> = flow {
+    operator fun invoke(registerBody: RegisterBody): Flow<Resource<String>> = flow {
         if (registerBody.fullName.isBlank()){
             emit(Resource.Error("Name is blank"))
             return@flow
@@ -40,9 +39,9 @@ class Register @Inject constructor(
         )
         try {
             emit(Resource.Loading())
-            val simpleResponse = kanistraRepository.register(register)
-            dataStoreRepository.saveToken(simpleResponse.message)
-            emit(Resource.Success(simpleResponse))
+            val responseBody = kanistraRepository.register(register)
+            dataStoreRepository.saveToken(responseBody.string())
+            emit(Resource.Success("simpleResponse"))
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
         } catch (e: IOException) {

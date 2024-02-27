@@ -2,7 +2,6 @@ package com.groks.kanistra.feature.domain.use_case.auth
 
 import com.groks.kanistra.common.Resource
 import com.groks.kanistra.feature.data.remote.dto.LoginBody
-import com.groks.kanistra.feature.domain.model.SimpleResponse
 import com.groks.kanistra.feature.domain.repository.DataStoreRepository
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,33 +14,33 @@ class Login @Inject constructor(
     private val kanistraRepository: KanistraRepository,
     private val dataStoreRepository: DataStoreRepository
 ) {
-    operator fun invoke(loginBody: LoginBody): Flow<Resource<SimpleResponse>> = flow {
-        if (loginBody.phoneNumber.isBlank()){
-            emit(Resource.Error("Login field is blank"))
+    operator fun invoke(loginBody: LoginBody): Flow<Resource<String>> = flow {
+        if (loginBody.phoneNumber.isBlank()) {
+            emit(
+                Resource.Error(
+                    "Введите номер телефона",
+                )
+            )
             return@flow
         }
-        if (loginBody.password.isBlank()){
-            emit(Resource.Error("Password field is blank"))
+        if (loginBody.password.isBlank()) {
+            emit(Resource.Error("Введите пароль"))
             return@flow
         }
         val login = LoginBody(
             phoneNumber = "8${loginBody.phoneNumber}",
             password = loginBody.password
         )
+
         try {
             emit(Resource.Loading())
-            val simpleResponse = kanistraRepository.getToken(login)
-            dataStoreRepository.saveToken(simpleResponse.message)
-            emit(Resource.Success(simpleResponse))
-
-        } catch (e: HttpException){
-            emit(Resource.Error(
-                message = e.localizedMessage ?: "An unexpected error occurred")
-            )
+            val token = kanistraRepository.getToken(login)
+            dataStoreRepository.saveToken(token.string())
+            emit(Resource.Success("simpleResponse"))
+        } catch (e: HttpException) {
+            emit(Resource.Error(e.response()?.errorBody()?.string() ?: "An unexpected error occurred"))
         } catch (e: IOException) {
-            emit(Resource.Error(
-                message = "Couldn't reach the server. Check your internet connection.")
-            )
+            emit(Resource.Error("Couldn't reach the server. Check your internet connection."))
         }
     }
 }

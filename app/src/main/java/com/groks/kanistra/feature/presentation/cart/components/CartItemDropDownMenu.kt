@@ -15,15 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun CartItemDropDownMenu(
     onDeleteButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier){
@@ -40,11 +37,17 @@ fun CartItemDropDownMenu(
         ) {
             DropdownMenuItem(
                 text = { Text("Поделиться") },
-                onClick = onShareButtonClick
+                onClick = {
+                    onShareButtonClick()
+                    expanded = false
+                }
             )
             DropdownMenuItem(
                 text = { Text("Удалить", color = Color.Red) },
-                onClick = onDeleteButtonClick
+                onClick = {
+                    onDeleteButtonClick()
+                    expanded = false
+                }
             )
         }
     }

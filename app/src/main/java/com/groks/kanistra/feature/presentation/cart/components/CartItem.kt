@@ -45,8 +45,8 @@ fun CartItem(
     onItemClick: (CartItem) -> Unit,
     onIncreaseClick: (CartItem) -> Unit,
     onDecreaseClick: (CartItem) -> Unit,
-    onRemove:() -> Unit
-){
+    onRemove: () -> Unit
+) {
     val amount = remember { mutableStateOf(cartItem.amount) }
 
     Row(
@@ -64,7 +64,7 @@ fun CartItem(
                 .padding(top = 4.dp, start = 4.dp, end = 4.dp, bottom = 36.dp)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
-            ) {
+        ) {
             when (painter.state) {
                 is AsyncImagePainter.State.Loading -> {
                     Box(contentAlignment = Alignment.Center) {
@@ -84,7 +84,11 @@ fun CartItem(
                             modifier = Modifier
                                 .fillMaxSize()
                         )*/
-                        Icon(imageVector = Icons.Default.Image, contentDescription = null, modifier = Modifier.fillMaxSize())
+                        Icon(
+                            imageVector = Icons.Default.Image,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
 
@@ -156,21 +160,26 @@ fun CartItem(
                                 .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
-                            IconButton(onClick = {
-                                amount.value -= 1
-                                onDecreaseClick(CartItem(
-                                    id = cartItem.id,
-                                    provider = cartItem.provider,
-                                    partId = cartItem.partId,
-                                    image = cartItem.image,
-                                    title = cartItem.title,
-                                    brand = cartItem.brand,
-                                    price = cartItem.price,
-                                    deliveryTime = cartItem.deliveryTime,
-                                    creationDate = cartItem.creationDate,
-                                    amount = amount.value
-                                ))
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    amount.value -= 1
+                                    onDecreaseClick(
+                                        CartItem(
+                                            id = cartItem.id,
+                                            provider = cartItem.provider,
+                                            partId = cartItem.partId,
+                                            image = cartItem.image,
+                                            title = cartItem.title,
+                                            brand = cartItem.brand,
+                                            price = cartItem.price,
+                                            deliveryTime = cartItem.deliveryTime,
+                                            creationDate = cartItem.creationDate,
+                                            amount = amount.value
+                                        )
+                                    )
+                                },
+                                enabled = isDecreasingEnabled(amount.value)
+                            ) {
                                 Text(
                                     text = "–",
                                     fontSize = 23.sp,
@@ -198,21 +207,26 @@ fun CartItem(
                                 .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
-                            IconButton(onClick = {
-                                amount.value += 1
-                                onIncreaseClick(CartItem(
-                                    id = cartItem.id,
-                                    provider = cartItem.provider,
-                                    partId = cartItem.partId,
-                                    image = cartItem.image,
-                                    title = cartItem.title,
-                                    brand = cartItem.brand,
-                                    price = cartItem.price,
-                                    deliveryTime = cartItem.deliveryTime,
-                                    creationDate = cartItem.creationDate,
-                                    amount = amount.value
-                                ))
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    amount.value += 1
+                                    onIncreaseClick(
+                                        CartItem(
+                                            id = cartItem.id,
+                                            provider = cartItem.provider,
+                                            partId = cartItem.partId,
+                                            image = cartItem.image,
+                                            title = cartItem.title,
+                                            brand = cartItem.brand,
+                                            price = cartItem.price,
+                                            deliveryTime = cartItem.deliveryTime,
+                                            creationDate = cartItem.creationDate,
+                                            amount = amount.value
+                                        )
+                                    )
+                                },
+                                enabled = isIncreasingEnabled(amount.value)
+                            ) {
                                 Text(
                                     text = "+",
                                     fontSize = 23.sp,
@@ -245,4 +259,16 @@ fun CartItem(
             }
         }
     }
+}
+
+fun isIncreasingEnabled(
+    amount: Int
+): Boolean {
+    return amount < 10
+}
+
+fun isDecreasingEnabled(
+    amount: Int
+): Boolean {
+    return amount > 1
 }

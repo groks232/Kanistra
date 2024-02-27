@@ -5,5 +5,6 @@ data class CartUseCases(
     val deleteCartItem: DeleteCartItem,
     val editCartItem: EditCartItem,
     val getCart: GetCart,
-    val getMultipleCartItems: GetMultipleCartItems
+    val getMultipleCartItems: GetMultipleCartItems,
+    val getCartAmount: GetCartAmount
 )

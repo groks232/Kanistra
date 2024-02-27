@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
@@ -97,9 +98,9 @@ fun PartCard(
                     .padding(10.dp)
                     .size(30.dp)) {
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
+                        imageVector = if(part.isInFavorites == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = null,
-                        tint = Color.Black
+                        tint = Color.Red
                     )
                 }
 

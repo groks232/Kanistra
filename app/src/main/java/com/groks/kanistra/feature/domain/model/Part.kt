@@ -10,5 +10,6 @@ data class Part(
     val images: List<String>,
     val amount: Int,
     val isInStock: Boolean? = null,
-    val provider: String
+    val provider: String,
+    val isInFavorites: Boolean? = null
 )

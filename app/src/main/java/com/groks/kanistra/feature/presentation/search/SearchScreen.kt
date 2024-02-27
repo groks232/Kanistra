@@ -14,6 +14,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -22,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +38,7 @@ import com.groks.kanistra.feature.presentation.search.components.FilterSection
 import com.groks.kanistra.feature.presentation.search.components.OrderSection
 import com.groks.kanistra.feature.presentation.search.components.SearchField
 import com.groks.kanistra.feature.presentation.search.components.SearchGrid
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,12 +48,42 @@ fun SearchScreen(
     onNavigateToLoginScreen: () -> Unit = {},
 ) {
     val state = viewModel.state.value
-
     val viewState by viewModel.viewState.collectAsState()
-
-    val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is SearchViewModel.UiEvent.ShowErrorSnackbar -> {
+                    val snackbarResult = snackbarHostState.showSnackbar(
+                        actionLabel = "Retry",
+                        message = event.message,
+                        duration = SnackbarDuration.Long
+                    )
+                    when(snackbarResult) {
+                        SnackbarResult.ActionPerformed -> {
+                            viewModel.onEvent(event.searchEvent)
+                        }
+                        SnackbarResult.Dismissed -> {
+
+                        }
+                    }
+                }
+                is SearchViewModel.UiEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = SnackbarDuration.Short,
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
 
     when(viewState){
         is ViewState.Loading -> {
@@ -115,6 +149,9 @@ fun SearchScreen(
             }
 
             Scaffold(
+                snackbarHost = {
+                    SnackbarHost(snackbarHostState)
+                },
                 modifier = Modifier,
                 topBar = {
                     SearchField(
