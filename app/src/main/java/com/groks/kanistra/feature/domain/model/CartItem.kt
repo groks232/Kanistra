@@ -10,5 +10,7 @@ data class CartItem(
     val brand: String,
     val price: Double,
     val deliveryTime: Int?,
-    val creationDate: String?
+    val creationDate: String?,
+    val isInFavorites: Boolean? = null,
+    var isSelected: Boolean? = null
 )

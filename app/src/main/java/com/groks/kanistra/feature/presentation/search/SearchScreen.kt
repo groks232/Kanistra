@@ -167,7 +167,7 @@ fun SearchScreen(
                     )
                 }
             ) { paddingValues ->
-                Column(modifier = Modifier.padding(paddingValues)) {
+                Column(modifier = Modifier) {
                     SearchGrid(
                         navController = navController,
                         parts = state.modifiedPartList,

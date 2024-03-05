@@ -9,4 +9,6 @@ sealed class CartEvent {
     object RefreshCart: CartEvent()
     data class IncreaseAmount(val cartItem: CartItem): CartEvent()
     data class DecreaseAmount(val cartItem: CartItem): CartEvent()
+    object EnableSelection: CartEvent()
+    data class SelectItem(val cartItem: CartItem): CartEvent()
 }

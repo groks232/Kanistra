@@ -9,5 +9,6 @@ data class FavoritesItem(
     val deliveryTime: Int,
     val image: String?,
     val provider: String,
-    val creationDate: String?
+    val creationDate: String?,
+    val isInCart: Boolean? = null
 )

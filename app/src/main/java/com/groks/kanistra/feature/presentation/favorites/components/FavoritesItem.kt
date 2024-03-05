@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -36,13 +38,20 @@ import com.groks.kanistra.feature.domain.model.FavoritesItem
 @Composable
 fun FavoritesItem(
     favoritesItem: FavoritesItem,
-    onItemClick: (FavoritesItem) -> Unit,
-    onAddToFavoritesClick: () -> Unit
-){
-    Column(Modifier.clickable(onClick = {
-        onItemClick(favoritesItem)
-    })) {
-        Card(shape = RoundedCornerShape(8.dp),
+    onItemClick: () -> Unit,
+    onAddToFavoritesClick: () -> Unit,
+    onAddToCartClick: () -> Unit,
+    isInCart: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clickable {
+                onItemClick()
+            }
+    ) {
+        Card(
+            shape = RoundedCornerShape(8.dp),
             colors = CardColors(
                 containerColor = Color.White,
                 contentColor = Color.Black,
@@ -58,9 +67,9 @@ fun FavoritesItem(
                 ),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
         ) {
-            Box(modifier = Modifier.fillMaxSize()){
+            Box(modifier = Modifier.fillMaxSize()) {
                 SubcomposeAsyncImage(
-                    model = if(!favoritesItem.image.isNullOrEmpty())favoritesItem.image else "",
+                    model = if (!favoritesItem.image.isNullOrEmpty()) favoritesItem.image else "",
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -93,12 +102,14 @@ fun FavoritesItem(
                 }
 
 
-                IconButton(onClick = {
-                    onAddToFavoritesClick()
-                },modifier = Modifier
-                    .align(alignment = Alignment.TopEnd)
-                    .padding(10.dp)
-                    .size(30.dp)) {
+                IconButton(
+                    onClick = {
+                        onAddToFavoritesClick()
+                    }, modifier = Modifier
+                        .align(alignment = Alignment.TopEnd)
+                        .padding(10.dp)
+                        .size(30.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = null,
@@ -110,7 +121,8 @@ fun FavoritesItem(
 
         }
 
-        Text(text = favoritesItem.title,
+        Text(
+            text = favoritesItem.title,
             modifier = Modifier
                 .padding(10.dp)
                 .align(alignment = Alignment.Start),
@@ -119,11 +131,27 @@ fun FavoritesItem(
         )
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onAddToCartClick,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp)
         ) {
-            Text(text = "В корзину")
+            Box(modifier = Modifier) {
+                BadgedBox(
+                    modifier = Modifier.align(Alignment.Center),
+                    badge = {
+                        if (isInCart) {
+                            Badge {
+                                Text(text = "+1")
+                            }
+                        }
+                    }
+                ) {
+                    Text(
+                        text = if (!isInCart) "В корзину" else "В корзине",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
         }
     }
 }

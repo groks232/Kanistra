@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.groks.kanistra.common.Resource
 import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
-import com.groks.kanistra.feature.presentation.search.SearchEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +28,6 @@ class CartViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
-
     init {
         onEvent(CartEvent.GetCart)
     }
@@ -60,13 +58,37 @@ class CartViewModel @Inject constructor(
                         event.cartItem
                     )
                 }
-                _state.value = _state.value.copy(cartList = _state.value.cartList.filter {
-                    it.id != event.cartItem.id
-                }.toMutableList())
 
-                viewModelScope.launch {
-                    cartUseCases.getCartAmount()
-                }
+                cartUseCases.deleteCartItem(event.cartItem).onEach { result ->
+                    when(result) {
+                        is Resource.Success -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.data ?: "Something happened."
+                                )
+                            )
+
+                            _state.value = _state.value.copy(cartList = _state.value.cartList.filter {
+                                it.id != event.cartItem.id
+                            }.toMutableList())
+
+                            viewModelScope.launch {
+                                cartUseCases.getCartAmount()
+                            }
+                        }
+                        is Resource.Error -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowErrorSnackbar(
+                                    message = result.message ?: "Unexpected error occurred.",
+                                    cartEvent = event
+                                )
+                            )
+                        }
+                        is Resource.Loading -> {
+
+                        }
+                    }
+                }.launchIn(viewModelScope)
             }
             is CartEvent.RestoreCartItem -> {
 
@@ -109,11 +131,19 @@ class CartViewModel @Inject constructor(
                     }
                 }
             }
+            is CartEvent.EnableSelection -> {
+                _state.value = _state.value.copy(isSelectionEnabled = !_state.value.isSelectionEnabled)
+            }
+            is CartEvent.SelectItem -> {
+                _state.value = _state.value.copy(cartList = _state.value.cartList.map {
+                    it.copy(isSelected = event.cartItem.isSelected)
+                }.toMutableList())
+            }
         }
     }
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String): UiEvent()
-        data class ShowErrorSnackbar(val message: String, val searchEvent: SearchEvent): UiEvent()
+        data class ShowErrorSnackbar(val message: String, val cartEvent: CartEvent): UiEvent()
     }
 }

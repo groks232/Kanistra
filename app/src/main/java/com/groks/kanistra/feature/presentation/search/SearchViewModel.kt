@@ -33,7 +33,7 @@ class SearchViewModel @Inject constructor(
     private val hintUseCases: HintUseCases,
     private val favoritesUseCases: FavoritesUseCases,
     checkToken: CheckToken
-): ViewModel(){
+) : ViewModel() {
     private val _state = mutableStateOf(SearchState())
     val state: State<SearchState> = _state
 
@@ -49,26 +49,64 @@ class SearchViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     val viewState = checkToken.invoke().map { loggedIn ->
-        when(loggedIn){
+        when (loggedIn) {
             true -> {
                 ViewState.LoggedIn
             }
+
             false -> {
                 ViewState.NotLoggedIn
             }
         }
-    }.stateIn(scope = viewModelScope, started = SharingStarted.Lazily, initialValue = ViewState.Loading)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = ViewState.Loading
+    )
 
 
     fun onEvent(event: SearchEvent) {
-        when(event){
+        when (event) {
             is SearchEvent.EnteredPartName -> {
                 _searchFieldText.value = searchFieldText.value.copy(
                     text = event.value
                 )
             }
+
             is SearchEvent.AddToCart -> {
-                cartUseCases.addToCart(cartItem = event.cartItem).onEach {  result ->
+                cartUseCases.addToCart(cartItem = event.cartItem).onEach { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.data ?: "Something happened."
+                                )
+                            )
+                        }
+
+                        is Resource.Error -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowErrorSnackbar(
+                                    message = result.message ?: "Unexpected error occurred.",
+                                    searchEvent = event
+                                )
+                            )
+                        }
+
+                        is Resource.Loading -> {
+
+                        }
+                    }
+                }.launchIn(viewModelScope)
+                viewModelScope.launch {
+                    cartUseCases.getCartAmount()
+                }
+            }
+
+            is SearchEvent.AddToFavorites -> {
+                favoritesUseCases.addToFavorites(
+                    favoritesItem = event.favoritesItem
+                ).onEach { result ->
                     when(result) {
                         is Resource.Success -> {
                             _eventFlow.emit(
@@ -90,25 +128,17 @@ class SearchViewModel @Inject constructor(
                         }
                     }
                 }.launchIn(viewModelScope)
-                viewModelScope.launch {
-                    cartUseCases.getCartAmount()
-                }
             }
-            is SearchEvent.AddToFavorites -> {
-                viewModelScope.launch {
-                    favoritesUseCases.addToFavorites(
-                        favoritesItem = event.favoritesItem
-                    )
-                }
-            }
+
             is SearchEvent.Search -> {
                 findParts(searchFieldText.value.text).onEach { result ->
-                    when(result) {
+                    when (result) {
                         is Resource.Success -> {
                             _state.value = SearchState(
                                 partList = result.data ?: emptyList(),
                                 modifiedPartList = result.data ?: emptyList()
                             )
+                            onEvent(SearchEvent.Order(SearchOrder.Price(OrderType.Descending)))
                         }
 
                         is Resource.Error -> {
@@ -129,6 +159,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             }
+
             is SearchEvent.GetHints -> {
                 viewModelScope.launch {
                     _hintState.value = _hintState.value.copy(
@@ -136,6 +167,7 @@ class SearchViewModel @Inject constructor(
                     )
                 }
             }
+
             is SearchEvent.AddHint -> {
                 viewModelScope.launch {
                     hintUseCases.insertHint(
@@ -143,27 +175,30 @@ class SearchViewModel @Inject constructor(
                     )
                 }
             }
+
             is SearchEvent.DeleteHint -> {
                 viewModelScope.launch {
                     hintUseCases.deleteHint(event.hint.id)
                 }
             }
+
             is SearchEvent.Order -> {
                 if (state.value.searchOrder.orderType == event.searchOrder.orderType &&
                     state.value.searchOrder::class == event.searchOrder::class
                 ) {
                     return
                 }
-                when(event.searchOrder.orderType) {
+                when (event.searchOrder.orderType) {
                     is OrderType.Ascending -> {
-                        when(event.searchOrder) {
+                        when (event.searchOrder) {
                             is SearchOrder.Price -> {
                                 _state.value = _state.value.copy(
-                                    modifiedPartList = _state.value.modifiedPartList.sortedBy {it.price },
-                                    partList = _state.value.partList.sortedBy {it.price },
+                                    modifiedPartList = _state.value.modifiedPartList.sortedBy { it.price },
+                                    partList = _state.value.partList.sortedBy { it.price },
                                     searchOrder = SearchOrder.Price(OrderType.Ascending)
                                 )
                             }
+
                             is SearchOrder.DeliveryDate -> {
                                 _state.value = _state.value.copy(
                                     modifiedPartList = _state.value.modifiedPartList.sortedByDescending { it.deliveryTime },
@@ -175,7 +210,7 @@ class SearchViewModel @Inject constructor(
                     }
 
                     is OrderType.Descending -> {
-                        when(event.searchOrder) {
+                        when (event.searchOrder) {
                             is SearchOrder.Price -> {
                                 _state.value = _state.value.copy(
                                     modifiedPartList = _state.value.modifiedPartList.sortedByDescending { it.price },
@@ -183,6 +218,7 @@ class SearchViewModel @Inject constructor(
                                     searchOrder = SearchOrder.Price(OrderType.Descending)
                                 )
                             }
+
                             is SearchOrder.DeliveryDate -> {
                                 _state.value = _state.value.copy(
                                     modifiedPartList = _state.value.modifiedPartList.sortedBy { it.deliveryTime },
@@ -194,8 +230,9 @@ class SearchViewModel @Inject constructor(
                     }
                 }
             }
+
             is SearchEvent.Filter -> {
-                when(event.searchFilter) {
+                when (event.searchFilter) {
                     is SearchFilter.Price -> {
                         _state.value = _state.value.copy(
                             modifiedPartList = _state.value.partList
@@ -210,6 +247,7 @@ class SearchViewModel @Inject constructor(
                             }
                         )
                     }
+
                     is SearchFilter.DeliveryDate -> {
                         _state.value = _state.value.copy(
                             modifiedPartList = _state.value.partList.filter { part ->
@@ -223,6 +261,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }
             }
+
             is SearchEvent.ResetFilters -> {
                 _state.value = _state.value.copy(
                     modifiedPartList = _state.value.partList,
@@ -230,11 +269,13 @@ class SearchViewModel @Inject constructor(
                     searchFilter = SearchFilter.Price(null, null)
                 )
             }
+
             is SearchEvent.ToggleOrderSection -> {
                 _state.value = _state.value.copy(
                     isOrderSectionVisible = !state.value.isOrderSectionVisible
                 )
             }
+
             is SearchEvent.ToggleFilterSection -> {
                 _state.value = _state.value.copy(
                     isFilterSectionVisible = !state.value.isFilterSectionVisible
@@ -244,7 +285,7 @@ class SearchViewModel @Inject constructor(
     }
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String): UiEvent()
-        data class ShowErrorSnackbar(val message: String, val searchEvent: SearchEvent): UiEvent()
+        data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowErrorSnackbar(val message: String, val searchEvent: SearchEvent) : UiEvent()
     }
 }
