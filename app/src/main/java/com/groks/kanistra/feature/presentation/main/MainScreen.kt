@@ -28,9 +28,14 @@ import com.groks.kanistra.feature.presentation.favorites.FavoritesScreen
 import com.groks.kanistra.feature.presentation.main.components.BottomNavigationBar
 import com.groks.kanistra.feature.presentation.order.OrderScreen
 import com.groks.kanistra.feature.presentation.part_details.PartScreen
+import com.groks.kanistra.feature.presentation.payment.PaymentScreen
+import com.groks.kanistra.feature.presentation.payment_history.PaymentHistoryScreen
 import com.groks.kanistra.feature.presentation.profile.ProfileScreen
+import com.groks.kanistra.feature.presentation.purchases.PurchasesScreen
 import com.groks.kanistra.feature.presentation.register.RegisterScreen
+import com.groks.kanistra.feature.presentation.returns.ReturnsScreen
 import com.groks.kanistra.feature.presentation.search.SearchScreen
+import com.groks.kanistra.feature.presentation.shippings.ShippingsScreen
 import com.groks.kanistra.feature.presentation.util.Screen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -39,15 +44,18 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val cartAmount by viewModel.cartAmount.collectAsState()
-    NavHostEntry(cartAmount)
+    //NavHostEntry(cartAmount)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHostEntry(
-    badgeCount: Int
+    viewModel: MainViewModel = hiltViewModel(),
+    /*badgeCount: Int*/
 ) {
+    val cartAmount by viewModel.cartAmount.collectAsState()
+
     val navController = rememberNavController()
 
     var isBottomNavVisible by remember { mutableStateOf(true) }
@@ -62,7 +70,7 @@ fun NavHostEntry(
                     modifier = Modifier
                         .height(65.dp)
                         .windowInsetsPadding(WindowInsets.safeDrawing),
-                    badgeCount = badgeCount
+                    badgeCount = cartAmount
                 )
             }
         }
@@ -91,6 +99,7 @@ fun NavHostEntry(
             }
             composable(route = Screen.ProfileScreen.route) {
                 ProfileScreen(
+                    navController = navController,
                     onNavigateToLoginScreen = {
                         navController.navigate(Screen.AuthScreen.route)
                     }
@@ -105,6 +114,9 @@ fun NavHostEntry(
                 OrderScreen(navController = navController)
                 isBottomNavVisible = false
             }
+            composable(route = Screen.PaymentScreen.route) {
+                PaymentScreen(navController = navController)
+            }
             composable(route = Screen.AuthScreen.route) {
                 AuthScreen(
                     onLogin = {
@@ -113,8 +125,6 @@ fun NavHostEntry(
                                 inclusive = true
                             }
                         }
-                        /*val a = navController.popBackStack(Screen.SearchScreen.route, false)
-                        Log.d("POP UP", a.toString())*/
                     },
                     onRegisterClick = {
                         navController.navigate(Screen.RegisterScreen.route)
@@ -132,6 +142,18 @@ fun NavHostEntry(
                         }
                     }
                 )
+            }
+            composable(route = Screen.Shippings.route) {
+                ShippingsScreen()
+            }
+            composable(route = Screen.Purchases.route) {
+                PurchasesScreen()
+            }
+            composable(route = Screen.PaymentHistory.route) {
+                PaymentHistoryScreen()
+            }
+            composable(route = Screen.Returns.route) {
+                ReturnsScreen()
             }
         }
     }

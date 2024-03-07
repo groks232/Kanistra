@@ -1,5 +1,6 @@
 package com.groks.kanistra.feature.domain.use_case.cart
 
+import android.util.Log
 import com.groks.kanistra.feature.domain.repository.DataStoreRepository
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import retrofit2.HttpException
@@ -15,9 +16,9 @@ class GetCartAmount @Inject constructor(
             val cartAmount = kanistraRepository.getCartAmount()
             dataStoreRepository.saveCartCount(cartAmount)
         } catch (e: HttpException){
-
+            Log.d("Cart amount exception", e.message())
         } catch (e: IOException) {
-
+            Log.d("Cart amount exception", "Internet connection problems")
         }
     }
 }

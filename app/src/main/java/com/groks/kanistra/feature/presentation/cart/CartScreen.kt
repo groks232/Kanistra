@@ -1,6 +1,7 @@
 package com.groks.kanistra.feature.presentation.cart
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -39,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -126,19 +128,19 @@ fun CartScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    val orderString = if(list.isEmpty()) state.cartList.joinToString(separator = ",") {
+                    val newList = mutableListOf<CartItem>()
+                    for(i in 0 until state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }.size){
+                        if(list[i].value) newList.add(state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }[i])
+                    }
+
+                    val orderString = if(newList.isEmpty()) state.cartList.joinToString(separator = ",") {
                         "${it.id}"
                     }
                     else {
-                        var newList = mutableListOf<CartItem>()
-                        for(i in 0 until state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }.size){
-                            if(list[i].value) newList.add(state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }[i])
-                        }
                         newList.joinToString(separator = ",") {
                             "${it.id}"
                         }
                     }
-
 
                     navController.navigate(Screen.OrderScreen.route + "/${orderString}")
                 },
@@ -169,7 +171,7 @@ fun CartScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            var newList = mutableListOf<CartItem>()
+            val newList = mutableListOf<CartItem>()
             for(i in 0 until state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }.size){
                 if(list[i].value) newList.add(state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }[i])
             }
@@ -185,6 +187,15 @@ fun CartScreen(
             itemsIndexed(
                 state.cartList.sortedByDescending { LocalDateTime.parse(it.creationDate) }
             ) { index, cartItem ->
+                var onPressedIndex by remember { mutableStateOf(-1) }
+                if(onPressedIndex != -1) {
+                    if(state.isSelectionEnabled) list[onPressedIndex].value = true
+                    onPressedIndex = -1
+                }
+                BackHandler(enabled = state.isSelectionEnabled) {
+                    viewModel.onEvent(CartEvent.EnableSelection)
+                }
+
                 CartItem(
                     isSelectionEnabled = state.isSelectionEnabled,
                     modifier = Modifier
@@ -194,22 +205,21 @@ fun CartScreen(
                                     navController.navigate(Screen.PartDetails.route + "/${cartItem.provider}/${cartItem.partId}")
                                 else
                                     list[index].value = !list[index].value
-                                    //isSelected = isSelected != true
                             },
                             onLongClick = {
                                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                 viewModel.onEvent(CartEvent.EnableSelection)
+                                onPressedIndex = index
                             }
                         ),
                     isChecked = list[index].value,
                     onCheckedChange = {
-
                         list[index].value = it
                     },
                     cartItem = cartItem,
                     onIncreaseClick = {
                         viewModel.onEvent(CartEvent.IncreaseAmount(
-                            com.groks.kanistra.feature.domain.model.CartItem(
+                            CartItem(
                                 id = it.id,
                                 provider = it.provider,
                                 partId = it.partId,

@@ -33,6 +33,8 @@ import com.groks.kanistra.feature.presentation.order.components.DateCard
 import com.groks.kanistra.feature.presentation.order.components.DeliveryPoint
 import com.groks.kanistra.feature.presentation.order.components.FAB
 import com.groks.kanistra.feature.presentation.order.components.TotalPricing
+import com.groks.kanistra.feature.presentation.util.Screen
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(
@@ -55,7 +57,10 @@ fun OrderScreen(
         floatingActionButton = {
             FAB(
                 agreeToRules = state.agreeToRules,
-                orderList = state.orderList
+                orderList = state.orderList,
+                onNavigateToPayment = {
+                    navController.navigate(Screen.PaymentScreen.route)
+                }
             )
         },
         floatingActionButtonPosition = FabPosition.End

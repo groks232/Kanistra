@@ -18,7 +18,8 @@ import com.groks.kanistra.feature.domain.model.CartItem
 @Composable
 fun FAB(
     agreeToRules: Boolean,
-    orderList: List<CartItem>
+    orderList: List<CartItem>,
+    onNavigateToPayment: () -> Unit = {}
 ) {
     CompositionLocalProvider(
         LocalRippleTheme provides
@@ -27,7 +28,9 @@ fun FAB(
 
         ExtendedFloatingActionButton(
             onClick = {
-                if (agreeToRules) { /* do something */ }
+                if (agreeToRules) {
+                    onNavigateToPayment()
+                }
             },
             icon = { Icon(Icons.Filled.ShoppingCartCheckout, "Extended floating action button.") },
             text = {
