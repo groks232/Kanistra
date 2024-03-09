@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.groks.kanistra.common.Resource
 import com.groks.kanistra.feature.domain.use_case.cart.CartUseCases
+import com.groks.kanistra.feature.domain.use_case.cart.WriteCartAmount
 import com.groks.kanistra.feature.domain.use_case.favorites.FavoritesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -15,13 +16,16 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val favoritesUseCases: FavoritesUseCases,
-    private val cartUseCases: CartUseCases
+    private val cartUseCases: CartUseCases,
+    private val writeCartAmount: WriteCartAmount
 ): ViewModel() {
     private val _state = mutableStateOf(FavoritesState())
     val state: State<FavoritesState> = _state
@@ -119,6 +123,17 @@ class FavoritesViewModel @Inject constructor(
                         }
                     }
 
+                }.launchIn(viewModelScope)
+
+                cartUseCases.getCartAmount().onEach {
+                    writeCartAmount(it)
+                }.retryWhen { cause, _ ->
+                    if (cause is HttpException) {
+                        delay(400)
+                        return@retryWhen true
+                    } else {
+                        return@retryWhen false
+                    }
                 }.launchIn(viewModelScope)
             }
         }

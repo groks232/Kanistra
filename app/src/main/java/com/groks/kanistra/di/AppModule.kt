@@ -118,7 +118,7 @@ object AppModule {
     @Singleton
     fun provideCartUseCases(kanistraRepository: KanistraRepository, dataStoreRepository: DataStoreRepository): CartUseCases {
         return CartUseCases(
-            addToCart = AddToCart(kanistraRepository),
+            addToCart = AddToCart(kanistraRepository, dataStoreRepository),
             deleteCartItem = DeleteCartItem(kanistraRepository),
             editCartItem = EditCartItem(kanistraRepository),
             getCart = GetCart(kanistraRepository),

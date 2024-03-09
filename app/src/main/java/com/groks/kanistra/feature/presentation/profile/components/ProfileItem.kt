@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.groks.kanistra.feature.presentation.profile.noRippleClickable
 
@@ -20,27 +22,31 @@ import com.groks.kanistra.feature.presentation.profile.noRippleClickable
 fun ProfileItem(
     mainContent: String,
     secondaryContent: String? = null,
-    onRowClick: () -> Unit
+    onRowClick: (() -> Unit)? = null,
+    icon: ImageVector? = null,
+    textColor: Color? = null
 ) {
     Row(
         Modifier
             .padding(if (!secondaryContent.isNullOrBlank()) 10.dp else 15.dp)
-            .noRippleClickable { onRowClick() }) {
-
+            .noRippleClickable { if(onRowClick != null) onRowClick() }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column() {
-                Text(text = mainContent, style = MaterialTheme.typography.titleSmall)
+                if (textColor != null) {
+                    Text(text = mainContent, style = MaterialTheme.typography.titleSmall, color = textColor)
+                } else Text(text = mainContent, style = MaterialTheme.typography.titleSmall)
                 if(!secondaryContent.isNullOrBlank()) Text(text = secondaryContent, style = MaterialTheme.typography.bodyMedium)
             }
             Icon(
                 modifier = Modifier
                     .align(Alignment.CenterVertically),
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                imageVector = icon ?: Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null
             )
         }

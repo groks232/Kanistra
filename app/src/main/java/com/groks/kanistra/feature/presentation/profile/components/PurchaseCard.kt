@@ -26,7 +26,7 @@ fun PurchaseCard(
         HorizontalDivider(
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            thickness = 2.dp
+            thickness = 1.dp
         )
         ProfileItem(
             mainContent = "Мои покупки",

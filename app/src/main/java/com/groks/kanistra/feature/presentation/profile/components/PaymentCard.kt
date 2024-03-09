@@ -26,7 +26,7 @@ fun PaymentCard(
         HorizontalDivider(
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            thickness = 2.dp
+            thickness = 1.dp
         )
         ProfileItem(
             mainContent = "Финансы",
@@ -35,7 +35,7 @@ fun PaymentCard(
         HorizontalDivider(
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            thickness = 2.dp
+            thickness = 1.dp
         )
         ProfileItem(
             mainContent = "Возвраты товара по браку",

@@ -16,13 +16,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.groks.kanistra.feature.presentation.profile.noRippleClickable
 
 @Composable
-fun ProfileRow(fullName: String) {
+fun ProfileRow(
+    fullName: String,
+    onProfileClick: (() -> Unit)? = null
+) {
     Card (
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 5.dp)
+            .noRippleClickable {
+                if (onProfileClick != null) {
+                    onProfileClick()
+                }
+            }
     ) {
         Row(
             modifier = Modifier

@@ -31,6 +31,7 @@ import com.groks.kanistra.feature.presentation.part_details.PartScreen
 import com.groks.kanistra.feature.presentation.payment.PaymentScreen
 import com.groks.kanistra.feature.presentation.payment_history.PaymentHistoryScreen
 import com.groks.kanistra.feature.presentation.profile.ProfileScreen
+import com.groks.kanistra.feature.presentation.profile_data.ProfileDataScreen
 import com.groks.kanistra.feature.presentation.purchases.PurchasesScreen
 import com.groks.kanistra.feature.presentation.register.RegisterScreen
 import com.groks.kanistra.feature.presentation.returns.ReturnsScreen
@@ -99,10 +100,7 @@ fun NavHostEntry(
             }
             composable(route = Screen.ProfileScreen.route) {
                 ProfileScreen(
-                    navController = navController,
-                    onNavigateToLoginScreen = {
-                        navController.navigate(Screen.AuthScreen.route)
-                    }
+                    navController = navController
                 )
                 isBottomNavVisible = true
             }
@@ -154,6 +152,14 @@ fun NavHostEntry(
             }
             composable(route = Screen.Returns.route) {
                 ReturnsScreen()
+            }
+            composable(route = Screen.ProfileData.route) {
+                ProfileDataScreen(
+                    onNavigateToLoginScreen = {
+                        navController.navigate(Screen.AuthScreen.route)
+                    }
+                )
+                isBottomNavVisible = true
             }
         }
     }

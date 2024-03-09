@@ -20,6 +20,7 @@ sealed class Screen(
     var outlinedIcon: ImageVector? = null,
     var hasBadge: Boolean
 ) {
+    object ProfileData: Screen("profile_data_screen_route", hasBadge = false)
     object Shippings: Screen("shippings_screen_route", hasBadge = false)
     object Purchases: Screen("purchases_screen_route", hasBadge = false)
     object PaymentHistory: Screen("payment_history_screen_route", hasBadge = false)
@@ -27,7 +28,7 @@ sealed class Screen(
     object AuthScreen: Screen("auth_screen_route", hasBadge = false)
     object RegisterScreen: Screen("register_screen_route", hasBadge = false)
     object PartDetails: Screen("part_details_screen_route", hasBadge = false)
-    object OrderScreen: Screen("order_screen_screen_route", hasBadge = false)
+    object OrderScreen: Screen("order_screen_route", hasBadge = false)
     object PaymentScreen: Screen("payment_screen_route", hasBadge = false)
     object SearchScreen: Screen(
         "search_screen_route",
