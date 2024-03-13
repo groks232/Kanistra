@@ -5,6 +5,7 @@ import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
 import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Part
+import com.groks.kanistra.feature.domain.model.RecentItem
 import com.groks.kanistra.feature.domain.model.User
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -89,6 +90,20 @@ interface KanistraApi {
 
     @DELETE("/favorites/delete")
     suspend fun deleteFromFavorites(
+        @Query("id") id: String
+    ): ResponseBody
+
+    //Recent
+    @POST("/favorites/add")
+    suspend fun addToRecent(
+        @Body recentItem: RecentItem
+    ): ResponseBody
+
+    @GET("/favorites/get")
+    suspend fun getRecent(): List<RecentItem>
+
+    @DELETE("/favorites/delete")
+    suspend fun deleteFromRecent(
         @Query("id") id: String
     ): ResponseBody
 }

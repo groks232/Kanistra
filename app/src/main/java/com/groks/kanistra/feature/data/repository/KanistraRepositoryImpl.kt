@@ -6,6 +6,7 @@ import com.groks.kanistra.feature.data.remote.dto.RegisterBody
 import com.groks.kanistra.feature.domain.model.CartItem
 import com.groks.kanistra.feature.domain.model.FavoritesItem
 import com.groks.kanistra.feature.domain.model.Part
+import com.groks.kanistra.feature.domain.model.RecentItem
 import com.groks.kanistra.feature.domain.model.User
 import com.groks.kanistra.feature.domain.repository.KanistraRepository
 import okhttp3.ResponseBody
@@ -76,5 +77,17 @@ class KanistraRepositoryImpl @Inject constructor(
 
     override suspend fun deleteFromFavorites(id: String): ResponseBody {
         return api.deleteFromFavorites(id)
+    }
+
+    override suspend fun addToRecent(recentItem: RecentItem): ResponseBody {
+        return api.addToRecent(recentItem)
+    }
+
+    override suspend fun getRecent(): List<RecentItem> {
+        return api.getRecent()
+    }
+
+    override suspend fun deleteFromRecent(id: String): ResponseBody {
+        return api.deleteFromRecent(id)
     }
 }

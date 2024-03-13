@@ -33,6 +33,10 @@ import com.groks.kanistra.feature.domain.use_case.hint.DeleteHint
 import com.groks.kanistra.feature.domain.use_case.hint.GetHints
 import com.groks.kanistra.feature.domain.use_case.hint.HintUseCases
 import com.groks.kanistra.feature.domain.use_case.hint.InsertHint
+import com.groks.kanistra.feature.domain.use_case.recent.AddToRecent
+import com.groks.kanistra.feature.domain.use_case.recent.DeleteRecentItem
+import com.groks.kanistra.feature.domain.use_case.recent.GetRecent
+import com.groks.kanistra.feature.domain.use_case.recent.RecentUseCases
 import com.groks.kanistra.feature.domain.use_case.user.DeleteUser
 import com.groks.kanistra.feature.domain.use_case.user.EditUserInfo
 import com.groks.kanistra.feature.domain.use_case.user.GetUserInfo
@@ -165,6 +169,16 @@ object AppModule {
             getHints = GetHints(repository),
             deleteHint = DeleteHint(repository),
             insertHint = InsertHint(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecentUseCases(repository: KanistraRepository): RecentUseCases {
+        return RecentUseCases(
+            addToRecent = AddToRecent(repository),
+            deleteRecentItem = DeleteRecentItem(repository),
+            getRecent = GetRecent(repository)
         )
     }
 }
