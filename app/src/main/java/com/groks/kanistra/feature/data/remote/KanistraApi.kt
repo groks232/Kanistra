@@ -94,15 +94,15 @@ interface KanistraApi {
     ): ResponseBody
 
     //Recent
-    @POST("/favorites/add")
+    @POST("/recent/add")
     suspend fun addToRecent(
         @Body recentItem: RecentItem
     ): ResponseBody
 
-    @GET("/favorites/get")
+    @GET("/recent/get")
     suspend fun getRecent(): List<RecentItem>
 
-    @DELETE("/favorites/delete")
+    @DELETE("/recent/delete")
     suspend fun deleteFromRecent(
         @Query("id") id: String
     ): ResponseBody
