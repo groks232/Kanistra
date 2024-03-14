@@ -96,6 +96,11 @@ fun ProfileDataScreen(
                                         viewModel.onEvent(ProfileDataEvent.LogOut)
                                     }
                                 )
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .padding(horizontal = 10.dp),
+                                    thickness = 1.dp
+                                )
                             }
                         }
                         if (state.error.isNotBlank()) {

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.groks.kanistra.common.Resource
-import com.groks.kanistra.feature.domain.use_case.favorites.FavoritesUseCases
+import com.groks.kanistra.feature.domain.use_case.recent.RecentUseCases
 import com.groks.kanistra.feature.domain.use_case.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
-    private val favoritesUseCases: FavoritesUseCases,
+    private val recentUseCases: RecentUseCases
 ): ViewModel() {
     private val _state = mutableStateOf(ProfileState())
     val state: State<ProfileState> = _state
@@ -46,10 +46,10 @@ class ProfileViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
 
-        favoritesUseCases.getFavorites().onEach { result ->
+        recentUseCases.getRecent().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = _state.value.copy(favoritesList = result.data ?: emptyList())
+                    _state.value = _state.value.copy(recentList = result.data ?: emptyList())
                 }
 
                 is Resource.Error -> {

@@ -35,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import com.groks.kanistra.feature.domain.model.FavoritesItem
+import com.groks.kanistra.feature.domain.model.RecentItem
 
 @Composable
 fun RecentlyWatchedCard(
-    favoritesItem: FavoritesItem,
+    recentItem: RecentItem,
     onItemClick: () -> Unit,
     onAddToFavoritesClick: () -> Unit,
     onAddToCartClick: () -> Unit,
@@ -71,7 +71,7 @@ fun RecentlyWatchedCard(
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 SubcomposeAsyncImage(
-                    model = if (!favoritesItem.image.isNullOrEmpty()) favoritesItem.image else "",
+                    model = if (!recentItem.image.isNullOrEmpty()) recentItem.image else "",
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -124,7 +124,7 @@ fun RecentlyWatchedCard(
         }
 
         Text(
-            text = favoritesItem.title,
+            text = recentItem.title,
             modifier = Modifier
                 .padding(10.dp)
                 .align(alignment = Alignment.Start),

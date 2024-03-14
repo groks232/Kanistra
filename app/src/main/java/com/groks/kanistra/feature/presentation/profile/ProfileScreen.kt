@@ -146,7 +146,7 @@ fun ProfileScreen(
                                 navController.navigate(Screen.Returns.route)
                             }
                         )
-                        RecentlyWatched(state.favoritesList)
+                        RecentlyWatched(state.recentList.sortedByDescending { it.creationDate })
                     }
                 }
                 if (state.error.isNotBlank()) {
