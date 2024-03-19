@@ -2,35 +2,49 @@ package com.groks.kanistra.feature.presentation.part_details
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,7 +65,42 @@ fun PartScreen(
 ){
     val state = viewModel.state.value
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        floatingActionButton = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            ) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = {
+                        Text(text = "Купить")
+                    },
+                    icon = {
+                        Icon(imageVector = Icons.Default.DeliveryDining, contentDescription = null)
+                    },
+                    onClick = { /*TODO*/ }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                ExtendedFloatingActionButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = {
+                        Text(text = "В корзину")
+                    },
+                    icon = {
+                        Icon(imageVector = Icons.Default.AddShoppingCart, contentDescription = null)
+                    },
+                    onClick = { /*TODO*/ }
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
         topBar = {
             TopAppBar(
                 title = { Text(
@@ -64,91 +113,139 @@ fun PartScreen(
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = null)
                     }
-                }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            /*TODO*/
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null)
+                    }
+                    IconButton(
+                        onClick = {
+                            /*TODO*/
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.Share, contentDescription = null)
+                    }
+                },
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             if (state.part != null){
                 val pagerState = rememberPagerState(
                     pageCount = {
-                        if (state.part.images.isNotEmpty()) state.part.images.size else 2
+                        if (state.part.images.isNotEmpty()) state.part.images.size else 1
                     }
                 )
 
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth()) {page ->
-                        SubcomposeAsyncImage(
-                            model =
-                            if(state.part.images.isNotEmpty()) {
-                                if(state.part.provider == "VAvto") "https://static.v-avto.ru${state.part.images[page]}"
-                                else state.part.images[page]
-                            } else  {
-                                ""
-                            },
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .padding(4.dp),
-                            contentScale = ContentScale.Fit
-                        ) {
-                            when (painter.state) {
-                                is AsyncImagePainter.State.Loading -> {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        CircularProgressIndicator()
+                    Card(
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+
+                        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth()) {page ->
+                            SubcomposeAsyncImage(
+                                model =
+                                if(state.part.images.isNotEmpty()) {
+                                    if(state.part.provider == "VAvto") "https://static.v-avto.ru${state.part.images[page]}"
+                                    else state.part.images[page]
+                                } else  {
+                                    ""
+                                },
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f)
+                                    .background(Color.White),
+                                contentScale = ContentScale.Fit
+                            ) {
+                                when (painter.state) {
+                                    is AsyncImagePainter.State.Loading -> {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            CircularProgressIndicator()
+                                        }
                                     }
-                                }
 
-                                is AsyncImagePainter.State.Error -> {
-                                    Icon(
-                                        imageVector = Icons.Default.Image,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                            .height(300.dp)
-                                    )
-                                }
+                                    is AsyncImagePainter.State.Error -> {
+                                        Box(
+                                            contentAlignment = Alignment.Center,
+                                            modifier = Modifier
+                                                .height(300.dp)
+                                                .background(Color.White)
+                                        ) {
+                                            Image(
+                                                imageVector = Icons.Default.Image,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                            )
+                                        }
+                                    }
 
-                                else -> {
-                                    SubcomposeAsyncImageContent()
+                                    else -> {
+                                        SubcomposeAsyncImageContent()
+                                    }
                                 }
                             }
                         }
+
+                        DotIndicator(pagerState = pagerState, if(state.part.images.isNotEmpty()) state.part.images.size else 1)
+
+                        PriceRow(state.part)
                     }
 
-                    DotIndicator(pagerState = pagerState, if(state.part.images.isNotEmpty()) state.part.images.size else state.part.images.size + 2)
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    PriceRow(state.part)
-
-                    Text(text = state.part.title,
+                    Card(
+                        shape = RoundedCornerShape(20.dp),
                         modifier = Modifier
-                            .padding(10.dp)
-                            .align(alignment = Alignment.Start))
-
-                    Card(shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .padding(10.dp)
                             .fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                         border = BorderStroke(2.dp, Color.Transparent),
                     ) {
-                        Text(text = "Артикул: ${state.part.partId}",
+                        Text(
+                            text = state.part.brand,
                             modifier = Modifier
-                                .padding(10.dp)
-                                .align(alignment = Alignment.CenterHorizontally))
-                        Text(text = "Бренд запчасти: ${state.part.brand}",
+                                .padding(start = 10.dp, top = 8.dp)
+                                .align(alignment = Alignment.Start),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = state.part.title,
                             modifier = Modifier
-                                .padding(10.dp)
-                                .align(alignment = Alignment.CenterHorizontally))
-                        Text(text = "Количество: ${state.part.amount}",
+                                .padding(start = 10.dp, top = 4.dp, bottom = 8.dp)
+                                .align(alignment = Alignment.Start),
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Card(
+                        onClick = {
+
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+                        border = BorderStroke(2.dp, Color.Transparent),
+                    ) {
+                        Text(
+                            text = "Дополнительная информация",
                             modifier = Modifier
-                                .padding(10.dp)
-                                .align(alignment = Alignment.CenterHorizontally))
-                        Text(text = "Доставка: ${state.part.deliveryTime} дней",
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .align(alignment = Alignment.CenterHorizontally))
+                                .padding(start = 10.dp, top = 16.dp, bottom = 16.dp)
+                                .align(alignment = Alignment.Start),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
                 }
             }
